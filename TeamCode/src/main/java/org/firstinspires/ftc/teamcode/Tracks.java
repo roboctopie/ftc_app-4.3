@@ -31,6 +31,8 @@ package org.firstinspires.ftc.teamcode;
 
 import android.sax.TextElementListener;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -41,7 +43,11 @@ import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+
 import java.util.Random;
+
+import static java.lang.Math.abs;
 
 
 /**
@@ -69,11 +75,13 @@ public class  Tracks extends LinearOpMode {
     Servo Basket;
     DcMotor Collector1;
     DcMotor Collector2;
-    float basketPos = 180;
+    BNO055IMU imu;
+    Orientation angles;
+    float basketPos = 185;
     Random rand = new Random();
 
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
@@ -86,6 +94,16 @@ public class  Tracks extends LinearOpMode {
         Basket = hardwareMap.servo.get("basket");
         Collector1 = hardwareMap.dcMotor.get("collector1");
         Collector2 = hardwareMap.dcMotor.get("collector2");
+
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled = true;
+        parameters.loggingTag = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
 
 
         // Most robots need the motor on one side to be reversed to drive forward
@@ -137,21 +155,36 @@ public class  Tracks extends LinearOpMode {
                 Arm.setPower(0);
                 telemetry.addData("Arm Power", "0.0");
             }
-            if(gamepad2.y)
+            if(gamepad1.y)
             {
                 basketPos=50;
             }
-            if(gamepad2.x)
+            if(gamepad1.x)
             {
-                basketPos=180;
+                basketPos=190;
             }
             if(gamepad2.b)
             {
                 basketPos=160;
             }
-            Collector1.setPower(gamepad2.right_stick_y*0.75);
-            telemetry.addData("Collector Motor Power", gamepad2.right_stick_y*0.75);
-            Collector2.setPower(gamepad2.left_stick_y/4);
+            if(gamepad1.b)
+            {
+                basketPos=50;
+                Basket.setPosition(basketPos/180);
+                Thread.sleep(750);
+                basketPos=190;
+            }
+            if(gamepad2.right_stick_y!=abs(gamepad2.right_stick_y))
+            {
+                Collector1.setPower(gamepad2.right_stick_y * 0.75);
+                telemetry.addData("Collector Motor Power", gamepad2.right_stick_y * 0.75);
+            }
+            else
+            {
+                Collector1.setPower(gamepad2.right_stick_y * 0.25);
+                telemetry.addData("Collector Motor Power", gamepad2.right_stick_y * 0.25);
+            }
+            Collector2.setPower(gamepad2.left_stick_y/2);
             telemetry.addData("Collector Brushes Power", gamepad2.left_stick_y/2);
             Basket.setPosition(basketPos/180);
             telemetry.addData("Left Motor Position", LeftMotor.getCurrentPosition());
@@ -161,18 +194,24 @@ public class  Tracks extends LinearOpMode {
             telemetry.addData("Collector Brushes Position", Collector2.getCurrentPosition());
             telemetry.addData("Basket Position", basketPos/180);
             telemetry.addData("Gamepad 1 Type", gamepad1.type());
-            telemetry.addData("Gamepad 1 LB Position", gamepad1.left_bumper);
+            telemetry.addData("Gamepad 1 B Pressed", gamepad1.b);
+            telemetry.addData("Gamepad 1 X Pressed", gamepad1.x);
+            telemetry.addData("Gamepad 1 Y Pressed", gamepad1.y);
+            telemetry.addData("Gamepad 1 LB Pressed", gamepad1.left_bumper);
             telemetry.addData("Gamepad 1 LT Position", gamepad1.left_trigger);
             telemetry.addData("Gamepad 1 RT Position", gamepad1.right_trigger);
             telemetry.addData("Gamepad 1 Left Stick Y Position", gamepad1.left_stick_y);
             telemetry.addData("Gamepad 1 Right Stick X Position", gamepad1.right_stick_x);
             telemetry.addData("Gamepad 2 Type", gamepad2.type());
             telemetry.addData("Gamepad 2 B Pressed", gamepad2.b);
-            telemetry.addData("Gamepad 2 X Pressed", gamepad2.x);
-            telemetry.addData("Gamepad 2 Y Pressed", gamepad2.y);
             telemetry.addData("Gamepad 2 Left Stick Y Position", gamepad2.left_stick_y);
             telemetry.addData("Gamepad 2 Right Stick Y Position", gamepad2.right_stick_y);
+            angles = imu.getAngularOrientation();
+            telemetry.addData("IMU Angle 1", angles.firstAngle);
+            telemetry.addData("IMU Angle 2", angles.secondAngle);
+            telemetry.addData("IMU Angle 3", angles.thirdAngle);
             telemetry.addData("Randomness", (rand.nextInt(420) + 1)/10);
+            telemetry.addData("Number of Data Points", "31.0");
             telemetry.update();
         }
     }
