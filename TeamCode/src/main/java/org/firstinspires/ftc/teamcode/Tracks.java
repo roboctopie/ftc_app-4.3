@@ -43,7 +43,6 @@ import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import java.util.Random;
@@ -78,17 +77,12 @@ public class  Tracks extends LinearOpMode {
     DcMotor Collector2;
     BNO055IMU imu;
     Orientation angles;
-    DistanceSensor DistanceSensor;
-
     float basketPos = 185;
     Random rand = new Random();
 
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry.addData("Status", "Initialized");
-        telemetry.addData("License", "Read/Write/Run");
-        telemetry.addData("Tap Run to Continue", "");
-        telemetry.addData("Number of Data Points", "4.0");
         telemetry.update();
 
         // Initialize the hardware variables. Note that the strings used here as parameters
@@ -100,7 +94,6 @@ public class  Tracks extends LinearOpMode {
         Basket = hardwareMap.servo.get("basket");
         Collector1 = hardwareMap.dcMotor.get("collector1");
         Collector2 = hardwareMap.dcMotor.get("collector2");
-        DistanceSensor = hardwareMap.get(DistanceSensor.class, "distance");
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
@@ -148,12 +141,12 @@ public class  Tracks extends LinearOpMode {
                 RightMotor.setPower(gamepad1.right_stick_x);
                 telemetry.addData("Right Motor Power", gamepad1.right_stick_x);
             }
-            if(gamepad1.left_trigger>0)
+            if(gamepad1.right_trigger>0)
             {
                 Arm.setPower(gamepad1.right_trigger);
                 telemetry.addData("Arm Power", gamepad1.right_trigger);
             }
-            else if(gamepad1.right_trigger>0)
+            else if(gamepad1.left_trigger>0)
             {
                 Arm.setPower(-gamepad1.left_trigger);
                 telemetry.addData("Arm Power", -gamepad1.left_trigger);
@@ -171,7 +164,7 @@ public class  Tracks extends LinearOpMode {
             {
                 basketPos=190;
             }
-            if(gamepad2.right_bumper)
+            if(gamepad2.b)
             {
                 basketPos=160;
             }
@@ -211,16 +204,15 @@ public class  Tracks extends LinearOpMode {
             telemetry.addData("Gamepad 1 Left Stick Y Position", gamepad1.left_stick_y);
             telemetry.addData("Gamepad 1 Right Stick X Position", gamepad1.right_stick_x);
             telemetry.addData("Gamepad 2 Type", gamepad2.type());
-            telemetry.addData("Gamepad 2 RB Pressed", gamepad2.right_bumper);
+            telemetry.addData("Gamepad 2 B Pressed", gamepad2.b);
             telemetry.addData("Gamepad 2 Left Stick Y Position", gamepad2.left_stick_y);
             telemetry.addData("Gamepad 2 Right Stick Y Position", gamepad2.right_stick_y);
             angles = imu.getAngularOrientation();
             telemetry.addData("IMU Angle 1", angles.firstAngle);
             telemetry.addData("IMU Angle 2", angles.secondAngle);
             telemetry.addData("IMU Angle 3", angles.thirdAngle);
-            telemetry.addData("Distance to Obstacle (in)", DistanceSensor.getDistance(DistanceUnit.INCH));
             telemetry.addData("Randomness", (rand.nextInt(420) + 1)/10);
-            telemetry.addData("Number of Data Points", "33.0");
+            telemetry.addData("Number of Data Points", "31.0");
             telemetry.update();
         }
     }
