@@ -119,6 +119,7 @@ public class  Tracks extends LinearOpMode {
         while (opModeIsActive()) {
             telemetry.addData("Status", "Running");
             telemetry.addData("License", "Read/Write/Run");
+            telemetry.addData("Run Time", runtime);
             if(gamepad1.right_stick_x==0)
             {
                 LeftMotor.setPower(gamepad1.left_stick_y);
