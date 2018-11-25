@@ -106,10 +106,12 @@ public class IMU_Test extends LinearOpMode {
             Orientation angles = imu.getAngularOrientation();
             if(gamepad1.left_bumper)  Turn(90 , RightMotor, LeftMotor, imu);
             if(gamepad1.right_bumper) Turn(-90, RightMotor, LeftMotor, imu);
+            Forward(1,0.5,RightMotor, LeftMotor, imu);
             telemetry.addData("IMU Angle 1", angles.firstAngle);
             telemetry.addData("IMU Angle 2", angles.secondAngle);
             telemetry.addData("IMU Angle 3", angles.thirdAngle);
             telemetry.update();
+            break;
         }
     }
     public void Turn(float degrees, DcMotor right_Motor, DcMotor left_Motor, BNO055IMU imu)
@@ -136,24 +138,27 @@ public class IMU_Test extends LinearOpMode {
         right_Motor.setPower(0);
 
     }
-    public void Forward(float distance,float power, DcMotor right_Motor, DcMotor left_Motor, BNO055IMU imu)
+    public void Forward(double distance,double power, DcMotor right_Motor, DcMotor left_Motor, BNO055IMU imu)
     {
         Orientation angles = imu.getAngularOrientation();
         float reset = -angles.firstAngle;
         float turn = angles.firstAngle-reset; //= degreesToTurn - angles.firstAngle;
         float  degrees= angles.firstAngle;
-        while(distance*1500>right_Motor.getCurrentPosition())
-        {
+        while(distance*900>right_Motor.getCurrentPosition())
+       {
+           //ZERO KINDDA BREAKS THING
             turn         = angles.firstAngle-reset;
             angles = imu.getAngularOrientation();
 
-            if(degrees-turn != 0) right_Motor.setPower(-(degrees-turn / 360 + ((degrees-turn / abs(degrees-turn)) * 0.3))+power);
-            if(degrees-turn != 0)  left_Motor.setPower(  degrees-turn / 360 + ((degrees-turn / abs(degrees-turn)) * 0.3)+power);
+            if(degrees-turn != 0) right_Motor.setPower(-(degrees-turn / 360 + ((degrees-turn / abs(degrees-turn)) * 0.4))+power);
+            if(degrees-turn != 0)  left_Motor.setPower(  degrees-turn / 360 + ((degrees-turn / abs(degrees-turn)) * 0.4)+power);
 
             telemetry.addData("IMU Angle 1",      angles.firstAngle);
             telemetry.addData("IMU Angle 2",      angles.secondAngle);
             telemetry.addData("IMU Angle 3",      angles.thirdAngle);
             telemetry.addData("Degrees Variable", degrees);
+            telemetry.addData("sEth is AnNoyed:: ",turn);
+            telemetry.addData("sEth is stIll AnNoyed:: ",degrees-turn / 360 + ((degrees-turn / abs(degrees-turn)) * 0.4)+power);
             telemetry.update();
         }
         left_Motor.setPower(0);
