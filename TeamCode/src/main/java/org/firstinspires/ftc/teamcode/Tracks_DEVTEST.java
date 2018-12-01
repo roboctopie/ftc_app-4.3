@@ -49,9 +49,9 @@ import java.util.Random;
 
 import static java.lang.Math.abs;
 
-@TeleOp(name="Tracks", group="Linear Opmode")
+@TeleOp(name="Tracks_DEVTEST", group="Linear Opmode")
 //@Disabled
-public class  Tracks extends LinearOpMode {
+public class  Tracks_DEVTEST extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -129,15 +129,15 @@ public class  Tracks extends LinearOpMode {
                 RightMotor.setPower(gamepad1.right_stick_x);
                 telemetry.addData("Right Motor Power", gamepad1.right_stick_x);
             }
-            if(gamepad2.right_trigger>0)
+            if(gamepad2.left_trigger>0)
             {
-                Arm.setPower(gamepad2.right_trigger);
-                telemetry.addData("Arm Power", gamepad2.right_trigger);
+                Arm.setPower(gamepad2.left_trigger);
+                telemetry.addData("Arm Power", gamepad2.left_trigger);
             }
-            else if(gamepad2.left_trigger>0)
+            else if(gamepad2.right_trigger>0)
             {
-                Arm.setPower(-gamepad2.left_trigger);
-                telemetry.addData("Arm Power", -gamepad2.left_trigger);
+                Arm.setPower(-gamepad2.right_trigger);
+                telemetry.addData("Arm Power", -gamepad2.right_trigger);
             }
             else
             {

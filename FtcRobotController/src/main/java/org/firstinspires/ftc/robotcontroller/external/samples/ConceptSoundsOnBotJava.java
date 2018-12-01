@@ -29,6 +29,8 @@
 
 package org.firstinspires.ftc.robotcontroller.external.samples;
 
+import android.os.Environment;
+
 import com.qualcomm.ftccommon.SoundPlayer;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -65,8 +67,8 @@ public class ConceptSoundsOnBotJava extends LinearOpMode {
 
     // Point to sound files on the phone's drive
     private String soundPath = "/FIRST/blocks/sounds";
-    private File goldFile   = new File("/sdcard" + soundPath + "/gold.wav");
-    private File silverFile = new File("/sdcard" + soundPath + "/silver.wav");
+    private File goldFile   = new File(Environment.getExternalStorageDirectory().getPath() + soundPath + "/gold.wav");
+    private File silverFile = new File(Environment.getExternalStorageDirectory().getPath() + soundPath + "/silver.wav");
 
     // Declare OpMode members.
     private boolean isX = false;    // Gamepad button state variables
