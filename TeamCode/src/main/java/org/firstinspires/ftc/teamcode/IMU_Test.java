@@ -68,7 +68,8 @@ public class IMU_Test extends LinearOpMode {
     BNO055IMU imu;
     DcMotor RightMotor;
     DcMotor LeftMotor;
-
+    public Orientation             lastAngles = new Orientation();
+    double globalAngle = 0;
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
@@ -99,15 +100,18 @@ public class IMU_Test extends LinearOpMode {
 
 
         // Wait for the game to start (driver presses PLAY)
+        while (!isStopRequested() && !imu.isGyroCalibrated())
+        {
+            sleep(50);
+            idle();
+        }
         waitForStart();
         runtime.reset();
 
         while (opModeIsActive()) {
             Orientation angles = imu.getAngularOrientation();
-            if(gamepad1.left_bumper)  Turn(90 , RightMotor, LeftMotor, imu);
-            if(gamepad1.right_bumper) Turn(-90, RightMotor, LeftMotor, imu);
             telemetry.addData("IMU Angle 1", angles.firstAngle);
-            telemetry.addData("IMU Angle 2", angles.secondAngle);
+            telemetry.addData("data stuffs", getAngle(imu));
             telemetry.addData("IMU Angle 3", angles.thirdAngle);
             telemetry.update();
         }
@@ -115,18 +119,18 @@ public class IMU_Test extends LinearOpMode {
     public void Turn(float degrees, DcMotor right_Motor, DcMotor left_Motor, BNO055IMU imu)
     {
         Orientation angles = imu.getAngularOrientation();
-        float reset = -angles.firstAngle;
-        float turn = angles.firstAngle-reset; //= degreesToTurn - angles.firstAngle;
+        double reset = -getAngle(imu);
+        double turn = getAngle(imu)-reset; //= degreesToTurn - getAngle(imu);
 
         while(turn > degrees+ 5 | turn < degrees - 5 & opModeIsActive())
         {
-            turn         = angles.firstAngle-reset;
+            turn         = getAngle(imu)-reset;
             angles = imu.getAngularOrientation();
 
-            if(degrees-turn != 0) right_Motor.setPower(-(degrees-turn / 360 + ((degrees-turn / abs(degrees-turn)) * 0.3)));
-            if(degrees-turn != 0)  left_Motor.setPower(  degrees-turn / 360 + ((degrees-turn / abs(degrees-turn)) * 0.3));
+            right_Motor.setPower(-(degrees-turn / 360 + ((degrees-turn / abs(degrees-turn)+0.0001) * 0.3)));
+            left_Motor.setPower(  degrees-turn / 360 + ((degrees-turn / (abs(degrees-turn)+0.0001) * 0.3)));
 
-            telemetry.addData("IMU Angle 1",      angles.firstAngle);
+            telemetry.addData("IMU Angle 1",      getAngle(imu));
             telemetry.addData("IMU Angle 2",      angles.secondAngle);
             telemetry.addData("IMU Angle 3",      angles.thirdAngle);
             telemetry.addData("Degrees Variable", degrees);
@@ -136,29 +140,55 @@ public class IMU_Test extends LinearOpMode {
         right_Motor.setPower(0);
 
     }
-    public void Forward(float distance,float power, DcMotor right_Motor, DcMotor left_Motor, BNO055IMU imu)
+    public void Forward(double distance,double power, DcMotor right_Motor, DcMotor left_Motor, BNO055IMU imu)
     {
         Orientation angles = imu.getAngularOrientation();
         float reset = -angles.firstAngle;
         float turn = angles.firstAngle-reset; //= degreesToTurn - angles.firstAngle;
         float  degrees= angles.firstAngle;
-        while(distance*1500>right_Motor.getCurrentPosition())
-        {
+        double distancea = distance+right_Motor.getCurrentPosition();
+        while(distancea*900>right_Motor.getCurrentPosition())
+       {
+           // DIVISION BY ZERO KINDA BREAKS THINGS
             turn         = angles.firstAngle-reset;
             angles = imu.getAngularOrientation();
 
-            if(degrees-turn != 0) right_Motor.setPower(-(degrees-turn / 360 + ((degrees-turn / abs(degrees-turn)) * 0.3))+power);
-            if(degrees-turn != 0)  left_Motor.setPower(  degrees-turn / 360 + ((degrees-turn / abs(degrees-turn)) * 0.3)+power);
+            right_Motor.setPower(-(degrees-turn / 360 + ((degrees-turn / abs(degrees-turn)+0.0001) * 0.3))+power);
+            left_Motor.setPower(  degrees-turn / 360 + ((degrees-turn / (abs(degrees-turn)+0.0001) * 0.3)+power));
 
             telemetry.addData("IMU Angle 1",      angles.firstAngle);
             telemetry.addData("IMU Angle 2",      angles.secondAngle);
             telemetry.addData("IMU Angle 3",      angles.thirdAngle);
             telemetry.addData("Degrees Variable", degrees);
+            telemetry.addData("sEth is AnNoyed:: ",turn);
+            telemetry.addData("sEth is stIll AnNoyed:: ",degrees-turn / 360 + ((degrees-turn / (abs(degrees-turn)+0.0001) * 0.3)+power));
             telemetry.update();
         }
         left_Motor.setPower(0);
         right_Motor.setPower(0);
 
     }
+    private double getAngle(BNO055IMU imu)
+    {
+        // We experimentally determined the Z axis is the axis we want to use for heading angle.
+        // We have to process the angle because the imu works in euler angles so the Z axis is
+        // returned as 0 to +180 or 0 to -180 rolling back to -179 or +179 when rotation passes
+        // 180 degrees. We detect this transition and track the total cumulative angle of rotation.
 
+        Orientation angles = imu.getAngularOrientation();
+
+
+
+        double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
+        if (deltaAngle < -180)
+            deltaAngle += 360;
+        else if (deltaAngle > 180)
+            deltaAngle -= 360;
+
+        globalAngle = deltaAngle;
+
+
+
+        return globalAngle;
+    }
 }
