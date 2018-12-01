@@ -49,7 +49,7 @@ import java.util.Random;
 
 import static java.lang.Math.abs;
 
-@TeleOp(name="Tracks", group="Linear Opmode")
+@TeleOp(name="Drive", group="Linear Opmode")
 //@Disabled
 public class  Tracks extends LinearOpMode {
 
@@ -129,15 +129,15 @@ public class  Tracks extends LinearOpMode {
                 RightMotor.setPower(gamepad1.right_stick_x);
                 telemetry.addData("Right Motor Power", gamepad1.right_stick_x);
             }
-            if(gamepad2.right_trigger>0)
+            if(gamepad2.left_trigger>0)
             {
-                Arm.setPower(gamepad2.right_trigger);
-                telemetry.addData("Arm Power", gamepad2.right_trigger);
+                Arm.setPower(gamepad2.left_trigger);
+                telemetry.addData("Arm Power", gamepad2.left_trigger);
             }
-            else if(gamepad2.left_trigger>0)
+            else if(gamepad2.right_trigger>0)
             {
-                Arm.setPower(-gamepad2.left_trigger);
-                telemetry.addData("Arm Power", -gamepad2.left_trigger);
+                Arm.setPower(-gamepad2.right_trigger);
+                telemetry.addData("Arm Power", -gamepad2.right_trigger);
             }
             else
             {
@@ -163,18 +163,18 @@ public class  Tracks extends LinearOpMode {
                 Thread.sleep(750);
                 basketPos=180;
             }
-            if(gamepad2.left_stick_y!=abs(gamepad2.left_stick_y))
+            if(gamepad2.right_stick_y!=abs(gamepad2.right_stick_y))
             {
-                Collector1.setPower(gamepad2.left_stick_y * 0.75);
-                telemetry.addData("Collector Motor Power", gamepad2.left_stick_y * 0.25);
+                Collector1.setPower(gamepad2.right_stick_y * 0.75);
+                telemetry.addData("Collector Motor Power", gamepad2.right_stick_y * 0.25);
             }
             else
             {
-                Collector1.setPower(gamepad2.left_stick_y * 0.25);
-                telemetry.addData("Collector Motor Power", gamepad2.left_stick_y * 0.75);
+                Collector1.setPower(gamepad2.right_stick_y * 0.25);
+                telemetry.addData("Collector Motor Power", gamepad2.right_stick_y * 0.75);
             }
-            Collector2.setPower(gamepad2.right_stick_y/2);
-            telemetry.addData("Collector Brushes Power", gamepad2.right_stick_y/2);
+            Collector2.setPower(gamepad2.left_stick_y/2);
+            telemetry.addData("Collector Brushes Power", gamepad2.left_stick_y/2);
             Basket.setPosition(basketPos/180);
             telemetry.addData("Left Motor Position", LeftMotor.getCurrentPosition());
             telemetry.addData("Right Motor Position", RightMotor.getCurrentPosition());

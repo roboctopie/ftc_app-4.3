@@ -49,7 +49,7 @@ import java.util.Random;
 
 import static java.lang.Math.abs;
 
-@TeleOp(name="Tracks_DEVTEST", group="Linear Opmode")
+@TeleOp(name="DEV Drive - May be Unstable", group="Linear Opmode")
 //@Disabled
 public class  Tracks_DEVTEST extends LinearOpMode {
 
