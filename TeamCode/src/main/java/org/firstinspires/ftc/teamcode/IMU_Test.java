@@ -60,7 +60,7 @@ import static java.lang.Math.abs;
  */
 
 @TeleOp(name="IMU TEST!!", group="Linear Opmode")
-@Disabled
+//@Disabled
 public class IMU_Test extends LinearOpMode {
 
     // Declare OpMode members.
@@ -68,8 +68,6 @@ public class IMU_Test extends LinearOpMode {
     BNO055IMU imu;
     DcMotor RightMotor;
     DcMotor LeftMotor;
-    public Orientation             lastAngles = new Orientation();
-    double globalAngle = 0;
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
@@ -110,35 +108,32 @@ public class IMU_Test extends LinearOpMode {
 
         while (opModeIsActive()) {
             Orientation angles = imu.getAngularOrientation();
+            Turn(90,RightMotor,LeftMotor,imu);
             telemetry.addData("IMU Angle 1", angles.firstAngle);
             telemetry.addData("data stuffs", getAngle(imu));
             telemetry.addData("IMU Angle 3", angles.thirdAngle);
             telemetry.update();
+            break;
         }
     }
     public void Turn(float degrees, DcMotor right_Motor, DcMotor left_Motor, BNO055IMU imu)
     {
         Orientation angles = imu.getAngularOrientation();
-        double reset = -getAngle(imu);
-        double turn = getAngle(imu)-reset; //= degreesToTurn - getAngle(imu);
-
-        while(turn > degrees+ 5 | turn < degrees - 5 & opModeIsActive())
+        double delta = degrees-angles.firstAngle;
+        while(!((angles.firstAngle+delta)-10<0&&(angles.firstAngle+delta)+10>0))
         {
-            turn         = getAngle(imu)-reset;
+            if(-(angles.firstAngle+delta)/100>0)left_Motor.setPower((-(angles.firstAngle+delta)/100)+0.35);
+            else left_Motor.setPower((-(angles.firstAngle+delta)/100)-0.35);
+            if((angles.firstAngle+delta)/100>0)right_Motor.setPower(((angles.firstAngle+delta)/100)+0.35);
+            else right_Motor.setPower(((angles.firstAngle+delta)/100)-0.35);
             angles = imu.getAngularOrientation();
-
-            right_Motor.setPower(-(degrees-turn / 360 + ((degrees-turn / abs(degrees-turn)+0.0001) * 0.3)));
-            left_Motor.setPower(  degrees-turn / 360 + ((degrees-turn / (abs(degrees-turn)+0.0001) * 0.3)));
-
-            telemetry.addData("IMU Angle 1",      getAngle(imu));
-            telemetry.addData("IMU Angle 2",      angles.secondAngle);
-            telemetry.addData("IMU Angle 3",      angles.thirdAngle);
-            telemetry.addData("Degrees Variable", degrees);
+            telemetry.addData("a", angles.firstAngle);
+            telemetry.addData("b",angles.firstAngle+delta);
             telemetry.update();
+            sleep(250);
         }
         left_Motor.setPower(0);
         right_Motor.setPower(0);
-
     }
     public void Forward(double distance,double power, DcMotor right_Motor, DcMotor left_Motor, BNO055IMU imu)
     {
@@ -148,8 +143,8 @@ public class IMU_Test extends LinearOpMode {
         float  degrees= angles.firstAngle;
         double distancea = distance+right_Motor.getCurrentPosition();
         while(distancea*900>right_Motor.getCurrentPosition())
-       {
-           // DIVISION BY ZERO KINDA BREAKS THINGS
+        {
+            // DIVISION BY ZERO KINDA BREAKS THINGS
             turn         = angles.firstAngle-reset;
             angles = imu.getAngularOrientation();
 
@@ -177,18 +172,6 @@ public class IMU_Test extends LinearOpMode {
 
         Orientation angles = imu.getAngularOrientation();
 
-
-
-        double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
-        if (deltaAngle < -180)
-            deltaAngle += 360;
-        else if (deltaAngle > 180)
-            deltaAngle -= 360;
-
-        globalAngle = deltaAngle;
-
-
-
-        return globalAngle;
+        return 0;
     }
 }
