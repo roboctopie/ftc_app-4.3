@@ -108,10 +108,8 @@ public class IMU_Test extends LinearOpMode {
 
         while (opModeIsActive()) {
             Orientation angles = imu.getAngularOrientation();
-            Turn(90,RightMotor,LeftMotor,imu);
+            Turn(-90,RightMotor,LeftMotor,imu);
             telemetry.addData("IMU Angle 1", angles.firstAngle);
-            telemetry.addData("data stuffs", getAngle(imu));
-            telemetry.addData("IMU Angle 3", angles.thirdAngle);
             telemetry.update();
             break;
         }
@@ -120,20 +118,25 @@ public class IMU_Test extends LinearOpMode {
     {
         Orientation angles = imu.getAngularOrientation();
         double delta = degrees-angles.firstAngle;
-        while(!((angles.firstAngle+delta)-10<0&&(angles.firstAngle+delta)+10>0))
+        double minSpeed= 0.55;
+        while(!((angles.firstAngle+delta)-1<0&&(angles.firstAngle+delta)+1>0))
         {
-            if(-(angles.firstAngle+delta)/100>0)left_Motor.setPower((-(angles.firstAngle+delta)/100)+0.35);
-            else left_Motor.setPower((-(angles.firstAngle+delta)/100)-0.35);
-            if((angles.firstAngle+delta)/100>0)right_Motor.setPower(((angles.firstAngle+delta)/100)+0.35);
-            else right_Motor.setPower(((angles.firstAngle+delta)/100)-0.35);
+            if(-(angles.firstAngle+delta)/100>0)left_Motor.setPower((-(angles.firstAngle+delta)/100)+minSpeed);
+            else left_Motor.setPower((-(angles.firstAngle+delta)/100)-minSpeed);
+            if((angles.firstAngle+delta)/100>0)right_Motor.setPower(((angles.firstAngle+delta)/100)+minSpeed);
+            else right_Motor.setPower(((angles.firstAngle+delta)/100)-minSpeed);
             angles = imu.getAngularOrientation();
-            telemetry.addData("a", angles.firstAngle);
+            telemetry.addData("IMU Angle 1", angles.firstAngle);
             telemetry.addData("b",angles.firstAngle+delta);
             telemetry.update();
-            sleep(250);
+            sleep(100);
         }
         left_Motor.setPower(0);
         right_Motor.setPower(0);
+        sleep(1000);
+        angles = imu.getAngularOrientation();
+        telemetry.addData("IMU Angle 1", angles.firstAngle);
+        sleep(5000);
     }
     public void Forward(double distance,double power, DcMotor right_Motor, DcMotor left_Motor, BNO055IMU imu)
     {
