@@ -179,22 +179,22 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
                                     telemetry.update();
                                     forward(2,0.5);
                                     rotate(30,0.5);
-                                    forward(5,0.5);
-                                    forward(-5,0.5);
+                                    forward(10,0.5);
+                                    forward(-10,0.5);
                                     break;
                                 } else if (goldMineralX > silverMineral1X || goldMineralX > silverMineral2X) {
                                     telemetry.addData("Gold Mineral Position", "Center");
                                     telemetry.update();
-                                    forward(5,0.5);
-                                    forward(-5,0.5);
+                                    forward(10,0.5);
+                                    forward(-10,0.5);
                                     break;
                                 } else {
                                     telemetry.addData("Gold Mineral Position", "Right");
                                     telemetry.update();
                                     forward(2,0.5);
                                     rotate(-32,0.5);
-                                    forward(5,0.5);
-                                    forward(-8,0.5);
+                                    forward(10,0.5);
+                                    forward(-10,0.5);
                                     break;
                                 }
                             }
