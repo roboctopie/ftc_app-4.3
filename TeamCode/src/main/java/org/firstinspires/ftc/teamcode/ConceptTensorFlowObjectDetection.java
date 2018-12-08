@@ -61,7 +61,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@Autonomous(name = "Block Detector", group = "Concept")
+@Autonomous(name = "Block Detector", group = "Main")
 //@Disabled
 public class ConceptTensorFlowObjectDetection extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
@@ -179,25 +179,13 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
                                     telemetry.update();
                                     forward(2,0.5);
                                     rotate(30,0.5);
-                                    Collector1.setPower(0.5);
-                                    sleep(700);
-                                    Collector1.setPower(0);
-                                    Collector2.setPower(-0.5);
                                     forward(5,0.5);
-                                    sleep(1000);
-                                    Collector2.setPower(0);
                                     forward(-5,0.5);
                                     break;
                                 } else if (goldMineralX > silverMineral1X || goldMineralX > silverMineral2X) {
                                     telemetry.addData("Gold Mineral Position", "Center");
                                     telemetry.update();
-                                    Collector1.setPower(0.5);
-                                    sleep(700);
-                                    Collector1.setPower(0);
-                                    Collector2.setPower(-0.5);
                                     forward(5,0.5);
-                                    sleep(1000);
-                                    Collector2.setPower(0);
                                     forward(-5,0.5);
                                     break;
                                 } else {
@@ -205,13 +193,7 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
                                     telemetry.update();
                                     forward(2,0.5);
                                     rotate(-32,0.5);
-                                    Collector1.setPower(0.5);
-                                    sleep(700);
-                                    Collector1.setPower(0);
-                                    Collector2.setPower(-0.5);
                                     forward(5,0.5);
-                                    sleep(1000);
-                                    Collector2.setPower(0);
                                     forward(-8,0.5);
                                     break;
                                 }

@@ -49,7 +49,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import static java.lang.Math.abs;
 
-@TeleOp(name="DEV Drive - May be Unstable", group="Linear Opmode")
+@TeleOp(name="DEV Drive - May be Unstable", group="Drive")
 //@Disabled
 public class  Tracks_DEVTEST extends LinearOpMode {
 
@@ -160,17 +160,17 @@ public class  Tracks_DEVTEST extends LinearOpMode {
                 Thread.sleep(750);
                 basketPos = 180;
             }
-            if(gamepad2.left_stick_y!=abs(gamepad2.left_stick_y))
+            if(gamepad2.right_stick_y<0)
             {
-                Collector1.setPower(gamepad2.left_stick_y * 0.75);
+                Collector1.setPower(gamepad2.right_stick_y * 0.75);
                 telemetry.addData("      Collector Motor Power", gamepad2.left_stick_y * 0.25);
             }
             else
             {
-                Collector1.setPower(gamepad2.left_stick_y * 0.25);
+                Collector1.setPower(gamepad2.right_stick_y * 0.25);
                 telemetry.addData("      Collector Motor Power", gamepad2.left_stick_y * 0.75);
             }
-            Collector2.setPower(gamepad2.right_stick_y/2);
+            Collector2.setPower(gamepad2.left_stick_y/2);
             telemetry.addData("      Collector Brushes Power", gamepad2.right_stick_y/2 + "\n");
             Basket.setPosition(basketPos/180);
             telemetry.addData("Motor Position Data", "");
