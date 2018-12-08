@@ -49,7 +49,7 @@ import java.util.Random;
 
 import static java.lang.Math.abs;
 
-@TeleOp(name="Drive", group="Linear Opmode")
+@TeleOp(name="Drive", group="Drive")
 //@Disabled
 public class  Tracks extends LinearOpMode {
 

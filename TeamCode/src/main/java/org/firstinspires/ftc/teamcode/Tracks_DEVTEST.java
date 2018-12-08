@@ -49,7 +49,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import static java.lang.Math.abs;
 
-@TeleOp(name="DEV Drive - May be Unstable", group="Linear Opmode")
+@TeleOp(name="Troubleshooter", group="Drive")
 //@Disabled
 public class  Tracks_DEVTEST extends LinearOpMode {
 
