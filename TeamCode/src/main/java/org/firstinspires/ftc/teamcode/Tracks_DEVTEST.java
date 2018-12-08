@@ -49,7 +49,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import static java.lang.Math.abs;
 
-@TeleOp(name="Troubleshooter", group="Drive")
+@TeleOp(name="Troubleshooter", group="Driver")
 //@Disabled
 public class  Tracks_DEVTEST extends LinearOpMode {
 
