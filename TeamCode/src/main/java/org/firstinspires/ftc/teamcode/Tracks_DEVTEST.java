@@ -49,7 +49,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import static java.lang.Math.abs;
 
-@TeleOp(name="Troubleshooter", group="Driver")
+@TeleOp(name="Driver Troubleshooter", group="Driver")
 //@Disabled
 public class  Tracks_DEVTEST extends LinearOpMode {
 
@@ -69,6 +69,7 @@ public class  Tracks_DEVTEST extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry.addData("Status", "Initialized");
+        telemetry.addData("Press Start to", "Start Troubleshooting");
         telemetry.update();
 
         // Initialize the hardware variables. Note that the strings used here as parameters
@@ -104,7 +105,8 @@ public class  Tracks_DEVTEST extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            telemetry.addData("Status", "Running\n");
+            telemetry.addData("Status", "Running");
+            telemetry.addData("Press Stop to", "Stop Troubleshooting\n");
             telemetry.addData("Motor Power Data", "");
             if(gamepad1.right_stick_x==0)
             {
@@ -201,7 +203,7 @@ public class  Tracks_DEVTEST extends LinearOpMode {
             telemetry.addData("      IMU Angle 2", angles.secondAngle);
             telemetry.addData("      IMU Angle 3", angles.thirdAngle);
             telemetry.addData("      Distance to Obstacle (in)", distanceSensor.getDistance(DistanceUnit.INCH) + "\n");
-            telemetry.addData("Not For Debugging Purposes", "");
+            telemetry.addData("Miscellaneous", "");
             telemetry.addData("      License", "Read/Write/Run");
             telemetry.addData("      Run Time", runtime);
             telemetry.addData("      Number of Data Points", "32.0");

@@ -60,7 +60,7 @@ import static java.lang.Math.abs;
  */
 
 @TeleOp(name="IMU TEST!!", group="Linear Opmode")
-//@Disabled
+@Disabled
 public class IMU_Test extends LinearOpMode {
 
     // Declare OpMode members.
