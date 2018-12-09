@@ -144,7 +144,7 @@ public class  Tracks extends LinearOpMode {
             }
             if(gamepad2.b)
             {
-                basketPos=160;
+                basketPos=150;
             }
             if(gamepad1.b)
             {

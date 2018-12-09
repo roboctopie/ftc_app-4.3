@@ -32,15 +32,12 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import java.util.List;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -48,8 +45,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
-import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+
+import java.util.List;
 
 /**
  * This 2018-2019 OpMode illustrates the basics of using the TensorFlow Object Detection API to
@@ -61,9 +60,9 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@Autonomous(name = "Block Detector", group = "Block Detector")
+@Autonomous(name = "Block Detector Crater", group = "Block Detector")
 //@Disabled
-public class ConceptTensorFlowObjectDetection extends LinearOpMode {
+public class BlockDetectCrater extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
     private static final String LABEL_SILVER_MINERAL = "Silver Mineral";
@@ -74,8 +73,8 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
     DcMotor LeftMotor;
     DcMotor Arm;
     Servo Basket;
-    DcMotor Collector1;
-    DcMotor Collector2;
+    DcMotor CollectorLift;
+    DcMotor Collector;
     BNO055IMU imu;
     Orientation angles;
     float basketPos = 185;
@@ -115,8 +114,8 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
         LeftMotor = hardwareMap.dcMotor.get("motor_left");
         Arm = hardwareMap.dcMotor.get("arm");
         Basket = hardwareMap.servo.get("basket");
-        Collector1 = hardwareMap.dcMotor.get("collector1");
-        Collector2 = hardwareMap.dcMotor.get("collector2");
+        CollectorLift = hardwareMap.dcMotor.get("collector1");
+        Collector = hardwareMap.dcMotor.get("collector2");
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
@@ -144,7 +143,6 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
 
         if (opModeIsActive()) {
             telemetry.addData("Status", "Running");
-            telemetry.addData("Press Stop to", "Stop Detecting");
             /** Activate Tensor Flow Object Detection. */
             if (tfod != null) {
                 tfod.activate();
@@ -156,38 +154,46 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
                     // the last time that call was made.
                     List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                     if (updatedRecognitions != null) {
+                        telemetry.addData("# Object Detected", updatedRecognitions.size());
                         if (updatedRecognitions.size() >= 2) {
                             int goldMineralX = -1;
                             int silverMineral1X = -1;
                             int silverMineral2X = -1;
+                            //12-8-18 Fixed detection of minerals in crater.
                             for (Recognition recognition : updatedRecognitions) {
-                                if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
+                                if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)&&recognition.getTop()>500) {
                                     goldMineralX = (int) recognition.getLeft();
-                                } else if (silverMineral1X == -1) {
+                                } else if (silverMineral1X == -1&&recognition.getTop()>500) {
                                     silverMineral1X = (int) recognition.getLeft();
-                                } else {
+                                } else if(recognition.getTop()>500) {
                                     silverMineral2X = (int) recognition.getLeft();
                                 }
                             }
-                            if (goldMineralX != -1 || silverMineral1X != -1 || silverMineral2X != -1) {
+                            if ((goldMineralX != -1 && silverMineral1X != -1) ||(silverMineral2X != -1&&goldMineralX != -1)||(silverMineral2X != -1&&silverMineral1X != -1)) {
+                                telemetry.addData("a",goldMineralX);
+                                telemetry.addData("a",silverMineral1X);
+                                telemetry.addData("a",silverMineral2X);
                                 if ((goldMineralX < silverMineral1X || goldMineralX < silverMineral2X) && goldMineralX != -1) {
+                                    telemetry.addData("Gold Mineral Position", "Left");
                                     telemetry.update();
                                     forward(2,0.5);
                                     rotate(30,0.5);
-                                    forward(10,0.5);
-                                    forward(-10,0.5);
+                                    forward(6,0.5);
+                                    tfod.deactivate();
                                     break;
                                 } else if (goldMineralX > silverMineral1X || goldMineralX > silverMineral2X) {
+                                    telemetry.addData("Gold Mineral Position", "Center");
                                     telemetry.update();
-                                    forward(10,0.5);
-                                    forward(-10,0.5);
+                                    forward(11,0.5);
+                                    tfod.deactivate();
                                     break;
                                 } else {
+                                    telemetry.addData("Gold Mineral Position", "Right");
                                     telemetry.update();
                                     forward(2,0.5);
                                     rotate(-32,0.5);
-                                    forward(10,0.5);
-                                    forward(-10,0.5);
+                                    forward(6,0.5);
+                                    tfod.deactivate();
                                     break;
                                 }
                             }

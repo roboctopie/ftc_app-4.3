@@ -27,11 +27,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -42,15 +42,15 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.FRONT;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -92,7 +92,7 @@ import java.util.List;
  */
 
 @TeleOp(name="Concept: Vuforia Rover Nav", group ="Concept")
-@Disabled
+//@Disabled
 public class ConceptVuforiaNavRoverRuckus extends LinearOpMode {
 
     /*
@@ -108,7 +108,6 @@ public class ConceptVuforiaNavRoverRuckus extends LinearOpMode {
      * and paste it in to your code on the next line, between the double quotes.
      */
     private static final String VUFORIA_KEY = "AW/aXP//////AAABmUL6p+56MU6rnqNxEkLhIJgblkVek4ygJheFrXngFLjvVakXKX/d9N3+Wtybm3PrmjrNzp607yhCTqDte6AjO3rMnKs9ZsEi2j63SySN51RRwuwxdqHkh1vAP+2pIMBtlGISJEMCnIX5PQ0dlbt7GUS16ca0vqkvqDwyN9/OBVbMlYrawCw8ttpOXWjxl4pDnqodRByM+LOMKVANu/jYjkSzDwuX79yw8kUqEDEOytePg8C+3is7mfwI93zTwv3s72Wn7YTF9G9Vkcf9h5y5qFEdP3liEm+V/sibPYsL+TWkZPz4N6XImJtCvcxGKe+4FW9gn40Q0YtKA6kuk8EX+5tjpQVzfmzknvwjE2abewZy";
-
 
     // Since ImageTarget trackables use mm to specifiy their dimensions, we must use mm for all the physical dimension.
     // We will define some constants and conversions here
@@ -274,6 +273,9 @@ public class ConceptVuforiaNavRoverRuckus extends LinearOpMode {
         /** Start tracking the data sets we care about. */
         targetsRoverRuckus.activate();
         while (opModeIsActive()) {
+            telemetry.addData("vTest",getTarget(allTrackables,3));
+            telemetry.update();
+            /*
 
             // check all the trackable target to see which one (if any) is visible.
             targetVisible = false;
@@ -307,6 +309,13 @@ public class ConceptVuforiaNavRoverRuckus extends LinearOpMode {
                 telemetry.addData("Visible Target", "none");
             }
             telemetry.update();
+
+            */
         }
+
+    }
+    public static boolean getTarget(List<VuforiaTrackable> trackables,int target)
+    {
+        return ((VuforiaTrackableDefaultListener)trackables.get(target).getListener()).isVisible();
     }
 }
