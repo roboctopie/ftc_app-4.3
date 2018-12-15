@@ -67,8 +67,8 @@ public class BlockDetectCrater extends LinearOpMode {
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
     private static final String LABEL_SILVER_MINERAL = "Silver Mineral";
     private ElapsedTime runtime = new ElapsedTime();
-    Orientation             lastAngles = new Orientation();
-    double globalAngle, power = .30, correction;
+    Orientation      lastAngles = new Orientation();
+    double globalAngle,   power = .30, correction;
     DcMotor RightMotor;
     DcMotor LeftMotor;
     DcMotor Arm;

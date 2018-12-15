@@ -52,8 +52,6 @@ import static java.lang.Math.abs;
 @TeleOp(name="Driver Troubleshooter", group="Driver")
 //@Disabled
 public class  Tracks_DEVTEST extends LinearOpMode {
-
-    // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     DcMotor RightMotor;
     DcMotor LeftMotor;
@@ -72,9 +70,6 @@ public class  Tracks_DEVTEST extends LinearOpMode {
         telemetry.addData("Press Start to", "Start Troubleshooting");
         telemetry.update();
 
-        // Initialize the hardware variables. Note that the strings used here as parameters
-        // to 'get' must correspond to the names assigned during the robot configuration
-        // step (using the FTC Robot Controller app on the phone).
         RightMotor = hardwareMap.dcMotor.get("motor_right");
         LeftMotor = hardwareMap.dcMotor.get("motor_left");
         Arm = hardwareMap.dcMotor.get("arm");
@@ -93,17 +88,11 @@ public class  Tracks_DEVTEST extends LinearOpMode {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
 
-
-        // Most robots need the motor on one side to be reversed to drive forward
         RightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-
-        // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
 
-
-        // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             telemetry.addData("Status", "Running");
             telemetry.addData("Press Stop to", "Stop Troubleshooting\n");

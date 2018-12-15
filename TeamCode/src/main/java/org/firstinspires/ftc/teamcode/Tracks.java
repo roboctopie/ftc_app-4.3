@@ -29,31 +29,69 @@
 
 package org.firstinspires.ftc.teamcode;
 
+/*
+ * Copyright (c) 2018 Team Roboctopi (#14496)
+ * ------------------------------------------
+ * Driver Code v1
+ *
+ * Used on Dec 09, 2018
+ * @ Francis Parker School
+ * Ptolemy League Competition
+ * Morning Session
+ *
+ * Hardware:
+ *  • 5 Motors
+ *  • 1 Servo
+ * Controls:
+ *  • Driver 1:
+ *    • Left Stick Up:     Drive Forward
+ *      • Analog Stick To Control Speed So Drivers Have Accurate Driving
+ *    • Left Stick Down:   Drive Backward
+ *      • Analog Stick To Control Speed So Drivers Have Accurate Driving
+ *    • Right Stick Left:  Turn Left
+ *      • Analog Stick To Control Speed So Drivers Have Accurate Turning
+ *      • Easier If Turning Is Seperate From Driving For Drivers
+ *    • Right Stick Right: Turn Right
+ *      • Analog Stick To Control Speed So Drivers Have Accurate Turning
+ *      • Easier If Turning Is Seperate From Driving For Drivers
+ *    • Y Button:          Dump Basket
+ *      • Button To Go To The Same Place Every Time
+ *    • X Button:          Return Basket From Dump
+ *      • Button To Go To The Same Place Every Time
+ *    • B Button:          Dump And Return Basket
+ *      • Button To Go To The Same Place Every Time
+ *  • Driver 2:
+ *    • Left Trigger:      Arm Down
+ *      • Analog Trigger So We Have Fine Control Over The Arm
+ *    • Right Trigger:     Arm Up
+ *      • Analog Trigger So We Have Fine Control Over The Arm
+ *    • Right Stick Up:    Collector Up
+ *      • Analog Stick So It Doesn't Go Too Fast And Hit The Robot Too Hard
+ *    • Right Stick Down:  Collector Down
+ *      • Analog Stick So It Doesn't Go Too Fast And Hit The Playing Field Too Hard
+ *    • Left Stick Up:     Collect Minerals
+ *      • Analog Stick to Control How Many Minerals Are Collected
+ *    • Right Stick Down:  Reject Minerals
+ *      • Analog Stick to Control How Many Minerals Are Rejected
+ *    • B Button:          Clear Basket for Arm Up
+ *      • Button To Go To The Same Place Every Time
+ * ------------------------------------------
+ */
+
 import android.sax.TextElementListener;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-
-import java.util.Random;
-
 import static java.lang.Math.abs;
 
 @TeleOp(name="Driver", group="Driver")
 //@Disabled
 public class  Tracks extends LinearOpMode {
-
-    // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     DcMotor RightMotor;
     DcMotor LeftMotor;
@@ -61,9 +99,6 @@ public class  Tracks extends LinearOpMode {
     Servo Basket;
     DcMotor Collector1;
     DcMotor Collector2;
-    BNO055IMU imu;
-    DistanceSensor distanceSensor;
-    Orientation angles;
     float basketPos = 180;
 
     @Override
@@ -72,38 +107,18 @@ public class  Tracks extends LinearOpMode {
         telemetry.addData("Press Start to", "Start Driving");
         telemetry.update();
 
-        // Initialize the hardware variables. Note that the strings used here as parameters
-        // to 'get' must correspond to the names assigned during the robot configuration
-        // step (using the FTC Robot Controller app on the phone).
         RightMotor = hardwareMap.dcMotor.get("motor_right");
         LeftMotor = hardwareMap.dcMotor.get("motor_left");
         Arm = hardwareMap.dcMotor.get("arm");
         Basket = hardwareMap.servo.get("basket");
         Collector1 = hardwareMap.dcMotor.get("collector1");
         Collector2 = hardwareMap.dcMotor.get("collector2");
-        distanceSensor = hardwareMap.get(DistanceSensor.class, "distance");
 
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
-        parameters.loggingEnabled = true;
-        parameters.loggingTag = "IMU";
-        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        imu.initialize(parameters);
-
-
-        // Most robots need the motor on one side to be reversed to drive forward
         RightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-
-        // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
 
-
-        // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             telemetry.addData("Status", "Running");
             telemetry.addData("Press Stop to", "Stop Driving");
