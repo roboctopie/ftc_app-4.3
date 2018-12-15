@@ -169,6 +169,7 @@ public class BlockDetectCrater extends LinearOpMode {
                                     silverMineral2X = (int) recognition.getLeft();
                                 }
                             }
+                             
                             if ((goldMineralX != -1 && silverMineral1X != -1) ||(silverMineral2X != -1&&goldMineralX != -1)||(silverMineral2X != -1&&silverMineral1X != -1)) {
                                 telemetry.addData("a",goldMineralX);
                                 telemetry.addData("a",silverMineral1X);
@@ -195,6 +196,7 @@ public class BlockDetectCrater extends LinearOpMode {
                                     forward(6,0.5);
                                     tfod.deactivate();
                                     break;
+
                                 }
                             }
                         }

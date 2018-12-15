@@ -171,9 +171,7 @@ public class BlockDetectDepot extends LinearOpMode {
                                 }
                             }
                             if (goldMineralX != -1 || silverMineral1X != -1 || silverMineral2X != -1) {
-                                telemetry.addData("a",goldMineralX);
-                                telemetry.addData("a",silverMineral1X);
-                                telemetry.addData("a",silverMineral2X);
+
                                 if ((goldMineralX < silverMineral1X || goldMineralX < silverMineral2X) && goldMineralX != -1) {
                                     telemetry.addData("Gold Mineral Position", "Left");
                                     telemetry.update();
@@ -396,4 +394,5 @@ public class BlockDetectDepot extends LinearOpMode {
         RightMotor.setPower(0);
         LeftMotor.setPower(0);
     }
+
 }

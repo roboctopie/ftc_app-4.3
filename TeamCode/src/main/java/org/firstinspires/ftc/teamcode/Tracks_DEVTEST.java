@@ -154,7 +154,7 @@ public class  Tracks_DEVTEST extends LinearOpMode {
             }
             if(gamepad2.b)
             {
-                basketPos=160;
+                basketPos=150;
             }
             if(gamepad1.b) {
                 basketPos = 50;
