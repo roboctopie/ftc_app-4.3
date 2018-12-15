@@ -27,6 +27,32 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+
+ /*
+ * This i s roboctopi's V1 software for autonomous.
+ * It was used at our first competition on 12/9/18 during the morning session at Francis Parker High School
+ * This code run these tasks in this order:
+ * (1.) Code runs that detects the minerals in the sampling position
+ * (2.) If the gold is in the center position the robot:
+ * (2a.) Lowers the collection system and
+ * (2b.) Drives forward and pushes the gold mineral out of th way
+ * (2c.) Spits out our team marker into the depot
+ * (2d.) Drives backward
+ * (3.) If the robot detects that the gold is in the right or left position:
+ * (3a.) Turns 30° right or left depending on the gold position
+ * (3b.) Drives forward to move the gold mineral out of the way
+ * (3c.) Drives backward a small amount
+ * (3d.) Turns 60° in the other direction
+ * (3e.) Drives forward into the depot
+ * (3f.) Spits out the team marker
+ * (3g.) Drives backward
+ * (3h.) If the cube was on the the right:
+ * (3h1.) Turns 90° clockwise
+ * (3h2.) Dives backward to clear lane
+ */
+
+
+
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
@@ -68,17 +94,17 @@ public class BlockDetectDepot extends LinearOpMode {
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
     private static final String LABEL_SILVER_MINERAL = "Silver Mineral";
     private ElapsedTime runtime = new ElapsedTime();
-    Orientation             lastAngles = new Orientation();
-    double globalAngle, power = .30, correction;
-    DcMotor RightMotor;
-    DcMotor LeftMotor;
-    DcMotor Arm;
-    Servo Basket;
-    DcMotor CollectorLift;
-    DcMotor Collector;
-    BNO055IMU imu;
-    Orientation angles;
-    float basketPos = 185;
+    private Orientation             lastAngles = new Orientation();
+    private double globalAngle, power = .30, correction;
+    private DcMotor RightMotor;
+    private DcMotor LeftMotor;
+    private DcMotor Arm;
+    private Servo Basket;
+    private DcMotor CollectorLift;
+    private DcMotor Collector;
+    private BNO055IMU imu;
+    private Orientation angles;
+    private float basketPos = 185;
 
     /*
      * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
