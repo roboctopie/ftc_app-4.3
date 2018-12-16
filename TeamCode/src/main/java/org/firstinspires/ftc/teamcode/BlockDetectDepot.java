@@ -27,6 +27,33 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+
+ /*
+ * This i s roboctopi's V1 software for autonomous.
+ * It was used at our first competition on 12/9/18 during the morning session at Francis Parker High School
+ * This code run these tasks in this order:
+ * (1.) Detects the minerals in the sampling position
+ * (2.) If the gold is in the center position the robot:
+ * (2a.) Lowers the collection system and
+ * (2b.) Drives forward and pushes the gold mineral out of th way
+ * (2c.) Spits out our team marker into the depot
+ * (2d.) Drives backward
+ * (3.) If the robot detects that the gold is in the right or left position:
+  * (3a.) Turns 30° right or left depending on the gold position
+  * (3b.) Drives forward to move the gold mineral out of the way
+  * (3c.) Drives backward a small amount
+  * (3d.) Turns 60° in the other direction
+  * (3e.) Lowers collector
+  * (3f.) Drives forward into the depot
+  * (3g.) Spits out the team marker
+  * (3h.) Drives backward
+  * (3i.) If the cube was on the the right:
+  * (3i1.) Turns 90° clockwise
+  * (3i2.) Dives backward to clear lane
+ */
+
+
+
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
@@ -34,10 +61,8 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.List;
@@ -68,17 +93,13 @@ public class BlockDetectDepot extends LinearOpMode {
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
     private static final String LABEL_SILVER_MINERAL = "Silver Mineral";
     private ElapsedTime runtime = new ElapsedTime();
-    Orientation             lastAngles = new Orientation();
-    double globalAngle, power = .30, correction;
-    DcMotor RightMotor;
-    DcMotor LeftMotor;
-    DcMotor Arm;
-    Servo Basket;
-    DcMotor CollectorLift;
-    DcMotor Collector;
-    BNO055IMU imu;
-    Orientation angles;
-    float basketPos = 185;
+    private Orientation             lastAngles = new Orientation();
+    private double globalAngle;
+    private DcMotor RightMotor;
+    private DcMotor LeftMotor;
+    private DcMotor CollectorLift;
+    private DcMotor Collector;
+    private BNO055IMU imu;
 
     /*
      * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
@@ -94,13 +115,13 @@ public class BlockDetectDepot extends LinearOpMode {
      */
     private static final String VUFORIA_KEY = "AW/aXP//////AAABmUL6p+56MU6rnqNxEkLhIJgblkVek4ygJheFrXngFLjvVakXKX/d9N3+Wtybm3PrmjrNzp607yhCTqDte6AjO3rMnKs9ZsEi2j63SySN51RRwuwxdqHkh1vAP+2pIMBtlGISJEMCnIX5PQ0dlbt7GUS16ca0vqkvqDwyN9/OBVbMlYrawCw8ttpOXWjxl4pDnqodRByM+LOMKVANu/jYjkSzDwuX79yw8kUqEDEOytePg8C+3is7mfwI93zTwv3s72Wn7YTF9G9Vkcf9h5y5qFEdP3liEm+V/sibPYsL+TWkZPz4N6XImJtCvcxGKe+4FW9gn40Q0YtKA6kuk8EX+5tjpQVzfmzknvwjE2abewZy";
 
-    /**
+    /*
      * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
      * localization engine.
      */
     private VuforiaLocalizer vuforia;
 
-    /**
+    /*
      * {@link #tfod} is the variable we will use to store our instance of the Tensor Flow Object
      * Detection engine.
      */
@@ -108,13 +129,13 @@ public class BlockDetectDepot extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        // Initialize the hardware variables. Note that the strings used here as parameters
-        // to 'get' must correspond to the names assigned during the robot configuration
-        // step (using the FTC Robot Controller app on the phone).
+        /*
+         Initialize the hardware variables. Note that the strings used here as parameters
+         to 'get' must correspond to the names assigned during the robot configuration
+         step (using the FTC Robot Controller app on the phone).
+        */
         RightMotor = hardwareMap.dcMotor.get("motor_right");
         LeftMotor = hardwareMap.dcMotor.get("motor_left");
-        Arm = hardwareMap.dcMotor.get("arm");
-        Basket = hardwareMap.servo.get("basket");
         CollectorLift = hardwareMap.dcMotor.get("collector1");
         Collector = hardwareMap.dcMotor.get("collector2");
 
@@ -136,7 +157,7 @@ public class BlockDetectDepot extends LinearOpMode {
         if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
             initTfod();
         }
-        /** Wait for the game to begin */
+        // Wait for the game to begin
         telemetry.addData("Status", "Initialized");
         telemetry.addData("Press Start to", "Start Detecting");
         telemetry.update();
@@ -144,7 +165,7 @@ public class BlockDetectDepot extends LinearOpMode {
 
         if (opModeIsActive()) {
             telemetry.addData("Status", "Running");
-            /** Activate Tensor Flow Object Detection. */
+            // Activate Tensor Flow Object Detection.
             if (tfod != null) {
                 tfod.activate();
             }
@@ -161,6 +182,7 @@ public class BlockDetectDepot extends LinearOpMode {
                             int silverMineral1X = -1;
                             int silverMineral2X = -1;
                             //12-8-18 Fixed detection of minerals in crater.
+                            //(1.) Detects the minerals in the sampling position
                             for (Recognition recognition : updatedRecognitions) {
                                 if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)&&recognition.getTop()>500) {
                                     goldMineralX = (int) recognition.getLeft();
@@ -171,54 +193,102 @@ public class BlockDetectDepot extends LinearOpMode {
                                 }
                             }
                             if (goldMineralX != -1 || silverMineral1X != -1 || silverMineral2X != -1) {
-
+                                // (3.) If the robot detects that the gold is in the right or left position
                                 if ((goldMineralX < silverMineral1X || goldMineralX < silverMineral2X) && goldMineralX != -1) {
                                     telemetry.addData("Gold Mineral Position", "Left");
                                     telemetry.update();
+
                                     forward(2,0.5);
+
+                                    //(3a.) Turns 30° to the left
                                     rotate(30,0.5);
+
+                                    // (3b.) Drives forward to move the gold mineral out of the way
                                     forward(10,0.5);
+
+                                    // (3c.) Drives backward a small amount
                                     forward(-1.5,0.5);
+
+                                    // (3d.) Turns 60° to the right
                                     rotate(-60,0.5);
+
+                                    // (3e.) Lowers collector
                                     CollectorLift.setPower(0.5);
                                     sleep(800);
                                     CollectorLift.setPower(0);
+
+                                    // (3f.) Drives forward into the depot
                                     forward(5,0.5);
+
+                                    // (3g.) Spits out the team marker
                                     Collector.setPower(1);
                                     sleep(1000);
                                     Collector.setPower(0);
+
+                                    //(3h.) Drives backward
                                     forward(-8,0.5);
                                     break;
-                                } else if (goldMineralX > silverMineral1X || goldMineralX > silverMineral2X) {
+                                }
+                                //(2.) Checks if the gold is in the center position the robot
+                                else if (goldMineralX > silverMineral1X || goldMineralX > silverMineral2X) {
                                     telemetry.addData("Gold Mineral Position", "Center");
                                     telemetry.update();
+
+                                    //Lowers the collection system
                                     CollectorLift.setPower(0.5);
                                     sleep(800);
                                     CollectorLift.setPower(0);
-                                    forward(6,0.5);
 
+                                    //Drives forward and pushes the gold mineral out of th way
+                                    forward(6,0.6);
+
+                                    //(2c.) Spits out our team marker into the depot
                                     Collector.setPower(1);
                                     forward(4,0.5);
                                     Collector.setPower(0);
+
+                                    //(2d.) Drives backward
                                     forward(-10,0.5);
                                     break;
-                                } else {
+                                }
+                                // (3.) If the robot detects that the gold is in the right or left position:
+                                else {
                                     telemetry.addData("Gold Mineral Position", "Right");
                                     telemetry.update();
                                     forward(2,0.5);
+
+                                    // (3a.) Turns 32° to the right
                                     rotate(-32,0.5);
+
+                                    // (3b.) Drives forward to move the gold mineral out of the way
                                     forward(10,0.5);
+
+                                    // (3c.) Drives backward a small amount
                                     forward(-1.5,0.5);
+
+                                    // (3d.) Turns 60° to the left
                                     rotate(50,0.5);
+
+                                    // (3e.) Lowers collector
                                     CollectorLift.setPower(0.5);
                                     sleep(800);
                                     CollectorLift.setPower(0);
+
+                                    // (3f.) Drives forward into the depot
                                     forward(5,0.5);
+
+                                    // (3g.) Spits out the team marker
                                     Collector.setPower(1);
                                     sleep(1000);
                                     Collector.setPower(0);
+
+                                    // (3h.) Drives backward
                                     forward(-8,0.5);
+
+                                    // (3i1.) Turns 90° clockwise
                                     rotate(-90,1);
+
+                                    // (3i2.) Dives backward to clear lane
                                     forward(-8,0.5);
                                     break;
                                 }
@@ -297,30 +367,12 @@ public class BlockDetectDepot extends LinearOpMode {
         return globalAngle;
     }
 
-    /**
+    /*
      * See if we are moving in a straight line and if not return a power correction value.
      * @return Power adjustment, + is adjust left - is adjust right.
      */
-    private double checkDirection()
-    {
-        // The gain value determines how sensitive the correction is to direction changes.
-        // You will have to experiment with your robot to get small smooth direction changes
-        // to stay on a straight line.
-        double correction, angle, gain = .10;
 
-        angle = getAngle();
-
-        if (angle == 0)
-            correction = 0;             // no adjustment.
-        else
-            correction = -angle;        // reverse sign of angle for correction.
-
-        correction = correction * gain;
-
-        return correction;
-    }
-
-    /**
+    /*
      * Rotate left or right the number of degrees. Does not support turning more than 180 degrees.
      * @param degrees Degrees to turn, + is left - is right
      */
@@ -354,12 +406,12 @@ public class BlockDetectDepot extends LinearOpMode {
         if (degrees < 0)
         {
             // On right turn we have to get off zero first.
-            while (opModeIsActive() && getAngle() == 0) {}
+            while (opModeIsActive() && getAngle() == 0) {sleep(1);}
 
-            while (opModeIsActive() && getAngle() > degrees) {}
+            while (opModeIsActive() && getAngle() > degrees) {sleep(1);}
         }
         else    // left turn.
-            while (opModeIsActive() && getAngle() < degrees){}
+            while (opModeIsActive() && getAngle() < degrees){sleep(1);}
 
         // turn the motors off.
         RightMotor.setPower(0);
