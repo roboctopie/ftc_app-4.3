@@ -29,6 +29,55 @@
 
 package org.firstinspires.ftc.teamcode;
 
+/*
+ * Copyright (c) 2018 Team Roboctopi (#14496)
+ * ------------------------------------------
+ * Driver Code v1
+ *
+ * Used on Dec 09, 2018
+ * @ Francis Parker School
+ * Ptolemy League Competition
+ * Morning Session
+ *
+ * Hardware:
+ *  • 5 Motors
+ *  • 1 Servo
+ * Controls:
+ *  • Driver 1:
+ *    • Left Stick Up:     Drive Forward
+ *      • Analog Stick To Control Speed So Drivers Have Accurate Driving
+ *    • Left Stick Down:   Drive Backward
+ *      • Analog Stick To Control Speed So Drivers Have Accurate Driving
+ *    • Right Stick Left:  Turn Left
+ *      • Analog Stick To Control Speed So Drivers Have Accurate Turning
+ *      • Easier If Turning Is Seperate From Driving For Drivers
+ *    • Right Stick Right: Turn Right
+ *      • Analog Stick To Control Speed So Drivers Have Accurate Turning
+ *      • Easier If Turning Is Seperate From Driving For Drivers
+ *    • Y Button:          Dump Basket
+ *      • Button To Go To The Same Place Every Time
+ *    • X Button:          Return Basket From Dump
+ *      • Button To Go To The Same Place Every Time
+ *    • B Button:          Dump And Return Basket
+ *      • Button To Go To The Same Place Every Time
+ *  • Driver 2:
+ *    • Left Trigger:      Arm Down
+ *      • Analog Trigger So We Have Fine Control Over The Arm
+ *    • Right Trigger:     Arm Up
+ *      • Analog Trigger So We Have Fine Control Over The Arm
+ *    • Right Stick Up:    Collector Up
+ *      • Analog Stick So It Doesn't Go Too Fast And Hit The Robot Too Hard
+ *    • Right Stick Down:  Collector Down
+ *      • Analog Stick So It Doesn't Go Too Fast And Hit The Playing Field Too Hard
+ *    • Left Stick Up:     Collect Minerals
+ *      • Analog Stick to Control How Many Minerals Are Collected
+ *    • Right Stick Down:  Reject Minerals
+ *      • Analog Stick to Control How Many Minerals Are Rejected
+ *    • B Button:          Clear Basket for Arm Up
+ *      • Button To Go To The Same Place Every Time
+ * ------------------------------------------
+ */
+
 import android.sax.TextElementListener;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
