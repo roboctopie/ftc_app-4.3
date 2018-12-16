@@ -78,8 +78,6 @@ package org.firstinspires.ftc.teamcode;
  * ------------------------------------------
  */
 
-import android.sax.TextElementListener;
-
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -89,24 +87,30 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import static java.lang.Math.abs;
 
-@TeleOp(name="Driver", group="Driver")
-//@Disabled
+@TeleOp(name="Driver", group="Driver") //This is an OpMode named "Driver"
+//@Disabled //This is Enabled
+
 public class  Tracks extends LinearOpMode {
+    //Define Misc. Variables
     private ElapsedTime runtime = new ElapsedTime();
+    float basketPos = 180;
+
+    //Create Motor/Servo Variables
     DcMotor RightMotor;
     DcMotor LeftMotor;
     DcMotor Arm;
     Servo Basket;
     DcMotor Collector1;
     DcMotor Collector2;
-    float basketPos = 180;
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() throws InterruptedException { //When The OpMode Is Initialized
+        //Tell User To Start The OpMode
         telemetry.addData("Status", "Initialized");
         telemetry.addData("Press Start to", "Start Driving");
         telemetry.update();
 
+        //Define Motor/Servo Variables
         RightMotor = hardwareMap.dcMotor.get("motor_right");
         LeftMotor = hardwareMap.dcMotor.get("motor_left");
         Arm = hardwareMap.dcMotor.get("arm");
@@ -114,21 +118,30 @@ public class  Tracks extends LinearOpMode {
         Collector1 = hardwareMap.dcMotor.get("collector1");
         Collector2 = hardwareMap.dcMotor.get("collector2");
 
+        //The Right Motor Must Be Reversed To Function Correctly
         RightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        //Wait For The OpMode To Begin
         waitForStart();
+
+        //Start The Runtime Timer
         runtime.reset();
 
-        while (opModeIsActive()) {
+        while (opModeIsActive()) { //Run The Code Until The OpMode is Stopped
+            //Tell User How To Stop The OpMode
             telemetry.addData("Status", "Running");
             telemetry.addData("Press Stop to", "Stop Driving");
-            if(gamepad1.right_stick_x==0)
+
+            //Drive On-Command
+            if(gamepad1.right_stick_x==0) //When Not Told To Turn From The Right Stick
             {
+                //Set Power To The Analog Value Of The Left Stick
                 LeftMotor.setPower(gamepad1.left_stick_y);
                 RightMotor.setPower(gamepad1.left_stick_y);
             }
             else if(gamepad1.right_stick_x>0)
             {
+                //Set Power To The Analog Value
                 LeftMotor.setPower(-gamepad1.right_stick_x);
                 RightMotor.setPower(gamepad1.right_stick_x);
             }
