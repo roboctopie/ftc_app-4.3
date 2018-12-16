@@ -31,7 +31,7 @@
  /*
  * This i s roboctopi's V1 software for autonomous.
  * It was used at our first competition on 12/9/18 during the morning session at Francis Parker High School
- * This code run these tasks in this order:
+ * This code runs these tasks in this order:
  * (1.) Detects the minerals in the sampling position
  * (2.) If the gold is in the center position the robot:
  * (2a.) Lowers the collection system and
