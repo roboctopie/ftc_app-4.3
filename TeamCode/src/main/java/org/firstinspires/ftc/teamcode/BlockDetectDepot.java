@@ -49,7 +49,7 @@
   * (3h.) Drives backward
   * (3i.) If the cube was on the the right:
   * (3i1.) Turns 90° clockwise
-  * (3i2.) Dives backward to clear lane
+  * (3i2.) Drives backward to clear lane
  */
 
 
@@ -288,7 +288,7 @@ public class BlockDetectDepot extends LinearOpMode {
                                     // (3i1.) Turns 90° clockwise
                                     rotate(-90,1);
 
-                                    // (3i2.) Dives backward to clear lane
+                                    // (3i2.) Drives backward to clear lane
                                     forward(-8,0.5);
                                     break;
                                 }

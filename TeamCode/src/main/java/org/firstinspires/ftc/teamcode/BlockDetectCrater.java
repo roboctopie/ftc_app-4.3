@@ -26,7 +26,18 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
+ /*
+ * This i s roboctopi's V1 software for autonomous.
+ * It was used at our first competition on 12/9/18 during the morning session at Francis Parker High School
+ * This code runs these tasks in this order:
+ * (1.) Detects the minerals in the sampling position
+ * (2.) If the gold is in the center position the robot:
+ *  (2b.) Drives forward and pushes the gold mineral out of the way and into crater
+ * (3.) If the robot detects that the gold is in the right or left position:
+ *  (3a.) Drives forward a small amount
+ *  (3b.) Turns 30° right or left depending on the gold position
+ *  (3c.) Drives forward to move the gold mineral out of the way
+ */
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
@@ -159,6 +170,8 @@ public class BlockDetectCrater extends LinearOpMode {
                             int goldMineralX = -1;
                             int silverMineral1X = -1;
                             int silverMineral2X = -1;
+                            //(1.) Detects the minerals in the sampling position
+                            //We added recognition.getTop()>500 to the if statement to ignore the minerals in the crater
                             //12-8-18 Fixed detection of minerals in crater.
                             for (Recognition recognition : updatedRecognitions) {
                                 if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)&&recognition.getTop()>500) {
@@ -169,22 +182,28 @@ public class BlockDetectCrater extends LinearOpMode {
                                     silverMineral2X = (int) recognition.getLeft();
                                 }
                             }
-                             
+                             //We had to modify the code that decided which position the gold was in because our robot can only see two minerals at the sme time
                             if ((goldMineralX != -1 && silverMineral1X != -1) ||(silverMineral2X != -1&&goldMineralX != -1)||(silverMineral2X != -1&&silverMineral1X != -1)) {
                                 telemetry.addData("a",goldMineralX);
                                 telemetry.addData("a",silverMineral1X);
                                 telemetry.addData("a",silverMineral2X);
+                                //(3.) If the robot detects that the gold is in the right or left position:
                                 if ((goldMineralX < silverMineral1X || goldMineralX < silverMineral2X) && goldMineralX != -1) {
                                     telemetry.addData("Gold Mineral Position", "Left");
                                     telemetry.update();
+                                    //(3a.) Drives forward a small amount
                                     forward(2,0.5);
+                                    //(3b.) Turns 30° right or left depending on the gold position
                                     rotate(30,0.5);
+                                    //(3c.) Drives forward to move the gold mineral out of the way
                                     forward(6,0.5);
                                     tfod.deactivate();
                                     break;
+                                //(2.) If the gold is in the center position the robot:
                                 } else if (goldMineralX > silverMineral1X || goldMineralX > silverMineral2X) {
                                     telemetry.addData("Gold Mineral Position", "Center");
                                     telemetry.update();
+                                    //2b.) Drives forward and pushes the gold mineral out of the way and into crater
                                     forward(11,0.5);
                                     tfod.deactivate();
                                     break;
