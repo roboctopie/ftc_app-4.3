@@ -66,16 +66,30 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+
+import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
+import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
+import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.FRONT;
 
 /**
  * This 2018-2019 OpMode illustrates the basics of using the TensorFlow Object Detection API to
@@ -102,6 +116,17 @@ public class BlockDetectDepot extends LinearOpMode {
     private DcMotor Collector;
     private BNO055IMU imu;
     private DistanceSensor distanceSensor;
+
+    private static final float mmPerInch        = 25.4f;
+    private static final float mmFTCFieldWidth  = (12*6) * mmPerInch;       // the width of the FTC field (from the center point to the outer panels)
+    private static final float mmTargetHeight   = (6) * mmPerInch;          // the height of the center of the target image above the floor
+
+    // Select which camera you want use.  The FRONT camera is the one on the same side as the screen.
+    // Valid choices are:  BACK or FRONT
+    private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
+
+    private OpenGLMatrix lastLocation = null;
+    private boolean targetVisible = false;
 
     /*
      * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
@@ -155,7 +180,51 @@ public class BlockDetectDepot extends LinearOpMode {
         // first.
         // Most robots need the motor on one side to be reversed to drive forward
         LeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        initVuforia();
+
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        VuforiaLocalizer.Parameters parametersVu = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        parametersVu.vuforiaLicenseKey = VUFORIA_KEY ;
+        parametersVu.cameraDirection   = CAMERA_CHOICE;
+        vuforia = ClassFactory.getInstance().createVuforia(parametersVu);
+        VuforiaTrackables targetsRoverRuckus = this.vuforia.loadTrackablesFromAsset("RoverRuckus");
+        VuforiaTrackable blueRover = targetsRoverRuckus.get(0);
+        blueRover.setName("Blue-Rover");
+        VuforiaTrackable redFootprint = targetsRoverRuckus.get(1);
+        redFootprint.setName("Red-Footprint");
+        VuforiaTrackable frontCraters = targetsRoverRuckus.get(2);
+        frontCraters.setName("Front-Craters");
+        VuforiaTrackable backSpace = targetsRoverRuckus.get(3);
+        backSpace.setName("Back-Space");
+        List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
+        allTrackables.addAll(targetsRoverRuckus);
+        OpenGLMatrix blueRoverLocationOnField = OpenGLMatrix
+                .translation(0, mmFTCFieldWidth, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0));
+        blueRover.setLocation(blueRoverLocationOnField);
+        OpenGLMatrix redFootprintLocationOnField = OpenGLMatrix
+                .translation(0, -mmFTCFieldWidth, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180));
+        redFootprint.setLocation(redFootprintLocationOnField);
+        OpenGLMatrix frontCratersLocationOnField = OpenGLMatrix
+                .translation(-mmFTCFieldWidth, 0, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0 , 90));
+        frontCraters.setLocation(frontCratersLocationOnField);
+        OpenGLMatrix backSpaceLocationOnField = OpenGLMatrix
+                .translation(mmFTCFieldWidth, 0, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90));
+        backSpace.setLocation(backSpaceLocationOnField);
+        final int CAMERA_FORWARD_DISPLACEMENT  = 110;   // eg: Camera is 110 mm in front of robot center
+        final int CAMERA_VERTICAL_DISPLACEMENT = 200;   // eg: Camera is 200 mm above ground
+        final int CAMERA_LEFT_DISPLACEMENT     = 0;     // eg: Camera is ON the robot's center line
+
+        OpenGLMatrix phoneLocationOnRobot = OpenGLMatrix
+                .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, YZX, DEGREES,
+                        CAMERA_CHOICE == FRONT ? 90 : -90, 0, 0));
+        for (VuforiaTrackable trackable : allTrackables)
+        {
+            ((VuforiaTrackableDefaultListener)trackable.getListener()).setPhoneInformation(phoneLocationOnRobot, parametersVu.cameraDirection);
+        }
 
         if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
             initTfod();
@@ -196,9 +265,9 @@ public class BlockDetectDepot extends LinearOpMode {
                                     silverMineral2X = (int) recognition.getLeft();
                                 }
                             }
-                            if (goldMineralX != -1 || silverMineral1X != -1 || silverMineral2X != -1) {
+                            if ((goldMineralX != -1 && silverMineral1X != -1) ||(silverMineral2X != -1&&goldMineralX != -1)||(silverMineral2X != -1&&silverMineral1X != -1)) {
                                 // (3.) If the robot detects that the gold is in the right or left position
-                                if ((goldMineralX < silverMineral1X || goldMineralX < silverMineral2X) && goldMineralX != -1) {
+                                if (silverMineral1X != -1&&silverMineral2X != -1) {
                                     telemetry.addData("Gold Mineral Position", "Left");
                                     telemetry.update();
 
@@ -234,7 +303,7 @@ public class BlockDetectDepot extends LinearOpMode {
                                     break;
                                 }
                                 //(2.) Checks if the gold is in the center position the robot
-                                else if (goldMineralX > silverMineral1X || goldMineralX > silverMineral2X) {
+                                else if ((goldMineralX > silverMineral1X || goldMineralX > silverMineral2X)&&false) {
                                     telemetry.addData("Gold Mineral Position", "Center");
                                     telemetry.update();
 
@@ -259,6 +328,25 @@ public class BlockDetectDepot extends LinearOpMode {
                                 else {
                                     telemetry.addData("Gold Mineral Position", "Right");
                                     telemetry.update();
+                                    tfod.deactivate();
+                                    //tfod.shutdown();
+                                    targetsRoverRuckus.activate();
+                                    while(true) {
+                                        for(VuforiaTrackable trackable : allTrackables)
+                                        {
+                                            OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) trackable.getListener()).getPose();
+                                            if(pose != null)
+                                            {
+                                                VectorF translation = pose.getTranslation();
+                                                telemetry.addData(trackable.getName()+ "-translation",translation);
+
+                                                double degreesToTurn = Math.toDegrees(Math.atan2(translation.get(1),translation.get(2)));
+
+                                                telemetry.addData(trackable.getName() + "-degrees",degreesToTurn);
+                                                telemetry.update();
+                                            }
+                                        }
+                                    }/*
                                     forward(2,0.5);
 
                                     // (3a.) Turns 32° to the right
@@ -304,6 +392,7 @@ public class BlockDetectDepot extends LinearOpMode {
                                     }
                                     rotate(42,0.5);
                                     break;
+                                    */
                                 }
                             }
                         }
@@ -315,7 +404,7 @@ public class BlockDetectDepot extends LinearOpMode {
 
         }
 
-        }
+    }
 
 
 
@@ -460,4 +549,8 @@ public class BlockDetectDepot extends LinearOpMode {
         LeftMotor.setPower(0);
     }
 
+    public static boolean getTarget(List<VuforiaTrackable> trackables,int target)
+    {
+        return ((VuforiaTrackableDefaultListener)trackables.get(target).getListener()).isVisible();
+    }
 }
