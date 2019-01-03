@@ -47,14 +47,21 @@ public class Lifter_Test extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        lifter = hardwareMap.dcMotor.get("lifter");
+        lifter = hardwareMap.dcMotor.get("collector1");
 
         waitForStart();
         runtime.reset();
 
-        while (opModeIsActive()) {
-            lifter.setPower(gamepad1.left_stick_y);
+        //while (opModeIsActive()) {
+            //lifter.setPower(gamepad1.left_stick_y);
+            lifter.setPower(0.3);
+            sleep(800);
+            lifter.setPower(0);
+            sleep(1000);
+            lifter.setPower(-0.8);
+            sleep(800);
+            lifter.setPower(0);
             telemetry.update();
-        }
+        //}
     }
 }
