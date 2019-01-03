@@ -49,7 +49,7 @@
   * (3h.) Drives backward
   * (3i.) If the cube was on the the right:
   * (3i1.) Turns 90° clockwise
-  * (3i2.) Drives backward to clear lane
+  * (3i2.) Dives backward to clear lane
  */
 
 
@@ -63,6 +63,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.List;
@@ -100,6 +101,7 @@ public class BlockDetectDepot extends LinearOpMode {
     private DcMotor CollectorLift;
     private DcMotor Collector;
     private BNO055IMU imu;
+    private DistanceSensor distanceSensor;
 
     /*
      * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
@@ -148,6 +150,7 @@ public class BlockDetectDepot extends LinearOpMode {
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
+        distanceSensor = hardwareMap.get(DistanceSensor.class, "distance");
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
         // first.
         // Most robots need the motor on one side to be reversed to drive forward
@@ -171,6 +174,7 @@ public class BlockDetectDepot extends LinearOpMode {
             }
 
             while (opModeIsActive()) {
+
                 if (tfod != null) {
                     // getUpdatedRecognitions() will return null if no new information is available since
                     // the last time that call was made.
@@ -275,21 +279,30 @@ public class BlockDetectDepot extends LinearOpMode {
                                     CollectorLift.setPower(0);
 
                                     // (3f.) Drives forward into the depot
-                                    forward(5,0.5);
+                                    //forward(5,0.5);
 
                                     // (3g.) Spits out the team marker
                                     Collector.setPower(1);
                                     sleep(1000);
                                     Collector.setPower(0);
-
+                                    CollectorLift.setPower(-0.8);
+                                    sleep(800);
+                                    CollectorLift.setPower(0);
                                     // (3h.) Drives backward
-                                    forward(-8,0.5);
+                                    forward(-2.635,0.5);
 
                                     // (3i1.) Turns 90° clockwise
-                                    rotate(-90,1);
+                                    rotate(68,1);
 
                                     // (3i2.) Drives backward to clear lane
                                     forward(-8,0.5);
+                                    // (3i2.) Dives backward to clear lane
+                                    while (distanceSensor.getDistance(DistanceUnit.INCH) > 12)
+                                    {
+                                        RightMotor.setPower(0.6);
+                                        LeftMotor.setPower(0.6);
+                                    }
+                                    rotate(42,0.5);
                                     break;
                                 }
                             }

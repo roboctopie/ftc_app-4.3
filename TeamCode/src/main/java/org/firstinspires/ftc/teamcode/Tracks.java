@@ -102,6 +102,7 @@ public class  Tracks extends LinearOpMode {
     Servo Basket;
     DcMotor Collector1;
     DcMotor Collector2;
+    DcMotor lifter;
 
     @Override
     public void runOpMode() throws InterruptedException { //When The OpMode Is Initialized
@@ -117,7 +118,7 @@ public class  Tracks extends LinearOpMode {
         Basket = hardwareMap.servo.get("basket");
         Collector1 = hardwareMap.dcMotor.get("collector1");
         Collector2 = hardwareMap.dcMotor.get("collector2");
-
+        lifter = hardwareMap.dcMotor.get("lifter");
         //The Right Motor Must Be Reversed To Function Correctly
         RightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -191,6 +192,7 @@ public class  Tracks extends LinearOpMode {
             }
             Collector2.setPower(gamepad2.left_stick_y/2);
             Basket.setPosition(basketPos/180);
+            lifter.setPower(gamepad1.left_stick_y);
             telemetry.update();
         }
     }
