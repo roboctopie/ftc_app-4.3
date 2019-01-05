@@ -306,7 +306,7 @@ public class BlockDetectDepot extends LinearOpMode {
                                 else if (goldMineralX > silverMineral1X || goldMineralX > silverMineral2X){
                                     telemetry.addData("Gold Mineral Position", "Center");
                                     telemetry.update();
-
+                                    tfod.deactivate();
                                     //Lowers the collection system
                                     CollectorLift.setPower(0.5);
                                     sleep(800);
@@ -314,14 +314,30 @@ public class BlockDetectDepot extends LinearOpMode {
 
                                     //Drives forward and pushes the gold mineral out of th way
                                     forward(6,0.6);
-
                                     //(2c.) Spits out our team marker into the depot
                                     Collector.setPower(1);
-                                    forward(4,0.5);
+                                    sleep(600);
                                     Collector.setPower(0);
+                                    CollectorLift.setPower(-0.8);
+                                    sleep(800);
+                                    CollectorLift.setPower(0);
+                                    forward(-1.4,0.5);
+                                    rotate(86,0.7);
+                                    forward(4,0.6);
+                                    rotate(-42,0.7);
+                                    targetsRoverRuckus.activate();
 
-                                    //(2d.) Drives backward
-                                    forward(-10,0.5);
+                                    rotate(getDegToTurn(allTrackables),0.5);
+                                    while (distanceSensor.getDistance(DistanceUnit.INCH) > 12)
+                                    {
+                                        RightMotor.setPower(0.6);
+                                        LeftMotor.setPower(0.6);
+                                    }
+                                    rotate(70,0.5);
+                                    forward(7,0.6);
+                                    CollectorLift.setPower(0.5);
+                                    sleep(500);
+                                    CollectorLift.setPower(0);
                                     break;
                                 }
                                 // (3.) If the robot detects that the gold is in the right or left position:
@@ -565,7 +581,7 @@ public class BlockDetectDepot extends LinearOpMode {
     {
 
         double degreesToTurn = 0;
-        for(int x = 0;x<100;x++) {
+        for(int x = 0;x<200;x++) {
             for (VuforiaTrackable trackable : allTrackables) {
                 OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) trackable.getListener()).getPose();
                 if (pose != null) {
@@ -574,8 +590,11 @@ public class BlockDetectDepot extends LinearOpMode {
                 }
 
             }
+            sleep(5);
+            telemetry.addData("test",degreesToTurn);
+            telemetry.update();
         }
-        sleep(5);
+
         return degreesToTurn;
     }
 }
