@@ -527,7 +527,7 @@ public class BlockDetectDepot extends LinearOpMode {
         RightMotor.setPower(0);
         LeftMotor.setPower(0);
         // wait for rotation to stop.
-        sleep(1000);
+        sleep(100);
 
         // reset angle tracking on new heading.
         resetAngle();
