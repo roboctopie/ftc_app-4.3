@@ -265,9 +265,9 @@ public class BlockDetectDepot extends LinearOpMode {
                                     silverMineral2X = (int) recognition.getLeft();
                                 }
                             }
-                            if ((goldMineralX != -1 && silverMineral1X != -1) ||(silverMineral2X != -1&&goldMineralX != -1)||(silverMineral2X != -1&&silverMineral1X != -1)) {
+                            if (goldMineralX != -1 || silverMineral1X != -1 || silverMineral2X != -1) {
                                 // (3.) If the robot detects that the gold is in the right or left position
-                                if (silverMineral1X != -1&&silverMineral2X != -1) {
+                                if ((goldMineralX < silverMineral1X || goldMineralX < silverMineral2X) && goldMineralX != -1) {
                                     telemetry.addData("Gold Mineral Position", "Left");
                                     telemetry.update();
 
@@ -303,7 +303,7 @@ public class BlockDetectDepot extends LinearOpMode {
                                     break;
                                 }
                                 //(2.) Checks if the gold is in the center position the robot
-                                else if ((goldMineralX > silverMineral1X || goldMineralX > silverMineral2X)&&false) {
+                                else if (goldMineralX > silverMineral1X || goldMineralX > silverMineral2X){
                                     telemetry.addData("Gold Mineral Position", "Center");
                                     telemetry.update();
 
@@ -330,6 +330,7 @@ public class BlockDetectDepot extends LinearOpMode {
                                     telemetry.update();
                                     tfod.deactivate();
                                     //tfod.shutdown();
+                                    /*
                                     targetsRoverRuckus.activate();
                                     while(true) {
                                         for(VuforiaTrackable trackable : allTrackables)
@@ -346,7 +347,7 @@ public class BlockDetectDepot extends LinearOpMode {
                                                 telemetry.update();
                                             }
                                         }
-                                    }/*
+                                    }*/
                                     forward(2,0.5);
 
                                     // (3a.) Turns 32° to the right
@@ -381,18 +382,25 @@ public class BlockDetectDepot extends LinearOpMode {
 
                                     // (3i1.) Turns 90° clockwise
                                     rotate(68,1);
+                                    forward(10,0.5);
+                                    rotate(-45,0.5);
+                                    targetsRoverRuckus.activate();
 
-                                    // (3i2.) Drives backward to clear lane
-                                    forward(-8,0.5);
+                                    rotate(getDegToTurn(allTrackables),0.5);
+
                                     // (3i2.) Dives backward to clear lane
                                     while (distanceSensor.getDistance(DistanceUnit.INCH) > 12)
                                     {
                                         RightMotor.setPower(0.6);
                                         LeftMotor.setPower(0.6);
                                     }
-                                    rotate(42,0.5);
+                                    rotate(75,0.5);
+                                    forward(7,0.6);
+                                    CollectorLift.setPower(0.5);
+                                    sleep(500);
+                                    CollectorLift.setPower(0);
                                     break;
-                                    */
+
                                 }
                             }
                         }
@@ -478,7 +486,7 @@ public class BlockDetectDepot extends LinearOpMode {
      * Rotate left or right the number of degrees. Does not support turning more than 180 degrees.
      * @param degrees Degrees to turn, + is left - is right
      */
-    private void rotate(int degrees, double power)
+    private void rotate(double degrees, double power)
     {
         double  leftPower, rightPower;
         sleep(150);
@@ -552,5 +560,22 @@ public class BlockDetectDepot extends LinearOpMode {
     public static boolean getTarget(List<VuforiaTrackable> trackables,int target)
     {
         return ((VuforiaTrackableDefaultListener)trackables.get(target).getListener()).isVisible();
+    }
+    public double getDegToTurn(List<VuforiaTrackable>allTrackables)
+    {
+
+        double degreesToTurn = 0;
+        for(int x = 0;x<100;x++) {
+            for (VuforiaTrackable trackable : allTrackables) {
+                OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) trackable.getListener()).getPose();
+                if (pose != null) {
+                    VectorF translation = pose.getTranslation();
+                    degreesToTurn = Math.toDegrees(Math.atan2(translation.get(0), -translation.get(2)));
+                }
+
+            }
+        }
+        sleep(5);
+        return degreesToTurn;
     }
 }
