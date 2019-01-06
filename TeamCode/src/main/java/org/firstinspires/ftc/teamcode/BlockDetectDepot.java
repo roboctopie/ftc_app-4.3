@@ -277,13 +277,10 @@ public class BlockDetectDepot extends LinearOpMode {
                                     rotate(30,0.5);
 
                                     // (3b.) Drives forward to move the gold mineral out of the way
-                                    forward(10,0.5);
-
-                                    // (3c.) Drives backward a small amount
-                                    forward(-1.5,0.5);
+                                    forward(8.5,0.5);
 
                                     // (3d.) Turns 60° to the right
-                                    rotate(-60,0.5);
+                                    rotate(-60,0.7);
 
                                     // (3e.) Lowers collector
                                     CollectorLift.setPower(0.5);
@@ -291,15 +288,31 @@ public class BlockDetectDepot extends LinearOpMode {
                                     CollectorLift.setPower(0);
 
                                     // (3f.) Drives forward into the depot
-                                    forward(5,0.5);
+                                    //forward(5,0.5);
 
                                     // (3g.) Spits out the team marker
                                     Collector.setPower(1);
                                     sleep(1000);
                                     Collector.setPower(0);
-
+                                    CollectorLift.setPower(-0.8);
+                                    sleep(800);
+                                    CollectorLift.setPower(0);
                                     //(3h.) Drives backward
-                                    forward(-8,0.5);
+                                    forward(-4,0.5);
+                                    rotate(75,0.5);
+                                    targetsRoverRuckus.activate();
+
+                                    rotate(getDegToTurn(allTrackables),0.5);
+                                    while (distanceSensor.getDistance(DistanceUnit.INCH) > 10)
+                                    {
+                                        RightMotor.setPower(0.6);
+                                        LeftMotor.setPower(0.6);
+                                    }
+                                    rotate(70,0.5);
+                                    forward(7,0.6);
+                                    CollectorLift.setPower(0.5);
+                                    sleep(500);
+                                    CollectorLift.setPower(0);
                                     break;
                                 }
                                 //(2.) Checks if the gold is in the center position the robot
