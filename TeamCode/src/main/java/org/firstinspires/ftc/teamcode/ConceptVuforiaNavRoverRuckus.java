@@ -310,8 +310,9 @@ public class ConceptVuforiaNavRoverRuckus extends LinearOpMode {
             telemetry.update();
 
             */
-        telemetry.addData(":::::::::::::::::::::::::::::::",getVuPos(allTrackables));
-        telemetry.update();
+            get90(allTrackables);
+        //telemetry.addData(":::::::::::::::::::::::::::::::",getVuPos(allTrackables));
+        //telemetry.update();
         }
 
     }
@@ -333,5 +334,23 @@ public class ConceptVuforiaNavRoverRuckus extends LinearOpMode {
             }
         }
         return degreesToTurn;
+    }
+    public int get90(List<VuforiaTrackable>allTrackables)
+    {
+        double degreesToTurn = 0;
+        for(VuforiaTrackable trackable : allTrackables)
+        {
+            OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) trackable.getListener()).getPose();
+            if(pose != null)
+            {
+                VectorF translation = pose.getTranslation();
+                degreesToTurn = -Math.toDegrees(Math.atan2(translation.get(0),-translation.get(2)));
+                telemetry.addData("meow",pose.getRow(0));
+                telemetry.update();
+            }
+
+        }
+
+        return 0;
     }
 }

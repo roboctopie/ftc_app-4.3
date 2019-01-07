@@ -134,7 +134,7 @@ public class  Tracks extends LinearOpMode {
             telemetry.addData("Press Stop to", "Stop Driving");
 
             //Drive On-Command
-            if(gamepad1.right_stick_x==0) //When Not Told To Turn From The Right Stick
+            /*if(gamepad1.right_stick_x==0) //When Not Told To Turn From The Right Stick
             {
                 //Set Power To The Analog Value Of The Left Stick
                 LeftMotor.setPower(gamepad1.left_stick_y);
@@ -146,16 +146,19 @@ public class  Tracks extends LinearOpMode {
                 LeftMotor.setPower(-gamepad1.right_stick_x);
                 RightMotor.setPower(gamepad1.right_stick_x);
             }
+
             else if(gamepad1.right_stick_x<0)
             {
                 LeftMotor.setPower(-gamepad1.right_stick_x);
                 RightMotor.setPower(gamepad1.right_stick_x);
             }
 
+
             else
             {
                 Arm.setPower(0);
             }
+            */
             if(gamepad1.y)
             {
                 basketPos=50;
@@ -175,18 +178,13 @@ public class  Tracks extends LinearOpMode {
                 Thread.sleep(750);
                 basketPos=180;
             }
-            if(gamepad2.right_stick_y!=abs(gamepad2.right_stick_y))
-            {
-                Collector1.setPower(gamepad2.right_stick_y * 0.75);
-            }
-            else
-            {
-                Collector1.setPower(gamepad2.right_stick_y * 0.25);
-            }
+            Collector1.setPower(-gamepad2.right_stick_y );
             Collector2.setPower(gamepad2.left_stick_y/2);
             Basket.setPosition(basketPos/180);
             lifter.setPower(gamepad1.left_trigger-gamepad1.right_trigger);
             Arm.setPower(gamepad2.right_trigger-gamepad2.left_trigger);
+            LeftMotor.setPower(gamepad1.left_stick_y-gamepad1.right_stick_x);
+            RightMotor.setPower(gamepad1.left_stick_y+gamepad1.right_stick_x);
             telemetry.update();
         }
     }

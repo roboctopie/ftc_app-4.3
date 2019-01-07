@@ -270,21 +270,21 @@ public class BlockDetectDepot extends LinearOpMode {
                                 if ((goldMineralX < silverMineral1X || goldMineralX < silverMineral2X) && goldMineralX != -1) {
                                     telemetry.addData("Gold Mineral Position", "Left");
                                     telemetry.update();
-
+                                    tfod.deactivate();
                                     forward(2,0.5);
 
                                     //(3a.) Turns 30° to the left
                                     rotate(30,0.5);
 
                                     // (3b.) Drives forward to move the gold mineral out of the way
-                                    forward(8.5,0.5);
-
+                                    forward(9.5,0.75);
+                                    forward(-1,0.75);
                                     // (3d.) Turns 60° to the right
                                     rotate(-60,0.7);
 
                                     // (3e.) Lowers collector
-                                    CollectorLift.setPower(0.5);
-                                    sleep(800);
+                                    CollectorLift.setPower(-1);
+                                    sleep(650);
                                     CollectorLift.setPower(0);
 
                                     // (3f.) Drives forward into the depot
@@ -294,12 +294,12 @@ public class BlockDetectDepot extends LinearOpMode {
                                     Collector.setPower(1);
                                     sleep(1000);
                                     Collector.setPower(0);
-                                    CollectorLift.setPower(-0.8);
+                                    CollectorLift.setPower(1);
                                     sleep(800);
                                     CollectorLift.setPower(0);
                                     //(3h.) Drives backward
                                     forward(-4,0.5);
-                                    rotate(75,0.5);
+                                    rotate(75,0.75);
                                     targetsRoverRuckus.activate();
 
                                     rotate(getDegToTurn(allTrackables),0.5);
@@ -308,10 +308,10 @@ public class BlockDetectDepot extends LinearOpMode {
                                         RightMotor.setPower(0.6);
                                         LeftMotor.setPower(0.6);
                                     }
-                                    rotate(70,0.5);
+                                    rotate(67.5,0.685);
                                     forward(7,0.6);
-                                    CollectorLift.setPower(0.5);
-                                    sleep(500);
+                                    CollectorLift.setPower(-1);
+                                    sleep(650);
                                     CollectorLift.setPower(0);
                                     break;
                                 }
@@ -321,8 +321,8 @@ public class BlockDetectDepot extends LinearOpMode {
                                     telemetry.update();
                                     tfod.deactivate();
                                     //Lowers the collection system
-                                    CollectorLift.setPower(0.5);
-                                    sleep(800);
+                                    CollectorLift.setPower(-1);
+                                    sleep(650);
                                     CollectorLift.setPower(0);
 
                                     //Drives forward and pushes the gold mineral out of th way
@@ -331,7 +331,7 @@ public class BlockDetectDepot extends LinearOpMode {
                                     Collector.setPower(1);
                                     sleep(600);
                                     Collector.setPower(0);
-                                    CollectorLift.setPower(-0.8);
+                                    CollectorLift.setPower(1);
                                     sleep(800);
                                     CollectorLift.setPower(0);
                                     forward(-1.4,0.5);
@@ -348,8 +348,8 @@ public class BlockDetectDepot extends LinearOpMode {
                                     }
                                     rotate(70,0.5);
                                     forward(7,0.6);
-                                    CollectorLift.setPower(0.5);
-                                    sleep(500);
+                                    CollectorLift.setPower(-1);
+                                    sleep(650);
                                     CollectorLift.setPower(0);
                                     break;
                                 }
@@ -392,8 +392,8 @@ public class BlockDetectDepot extends LinearOpMode {
                                     rotate(50,0.5);
 
                                     // (3e.) Lowers collector
-                                    CollectorLift.setPower(0.5);
-                                    sleep(800);
+                                    CollectorLift.setPower(-1);
+                                    sleep(650);
                                     CollectorLift.setPower(0);
 
                                     // (3f.) Drives forward into the depot
@@ -403,16 +403,16 @@ public class BlockDetectDepot extends LinearOpMode {
                                     Collector.setPower(1);
                                     sleep(1000);
                                     Collector.setPower(0);
-                                    CollectorLift.setPower(-0.8);
+                                    CollectorLift.setPower(1);
                                     sleep(800);
                                     CollectorLift.setPower(0);
                                     // (3h.) Drives backward
-                                    forward(-2.635,0.5);
+                                    forward(-3,0.5);
 
                                     // (3i1.) Turns 90° clockwise
                                     rotate(68,1);
                                     forward(10,0.5);
-                                    rotate(-45,0.5);
+                                    rotate(-45,0.8);
                                     targetsRoverRuckus.activate();
 
                                     rotate(getDegToTurn(allTrackables),0.5);
@@ -423,10 +423,10 @@ public class BlockDetectDepot extends LinearOpMode {
                                         RightMotor.setPower(0.6);
                                         LeftMotor.setPower(0.6);
                                     }
-                                    rotate(75,0.5);
+                                    rotate(65,0.7);
                                     forward(7,0.6);
-                                    CollectorLift.setPower(0.5);
-                                    sleep(500);
+                                    CollectorLift.setPower(-1);
+                                    sleep(650);
                                     CollectorLift.setPower(0);
                                     break;
 
