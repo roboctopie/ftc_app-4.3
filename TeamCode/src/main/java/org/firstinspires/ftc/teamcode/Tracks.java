@@ -26,6 +26,9 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+package org.firstinspires.ftc.teamcode;
+
 /*
  * Copyright (c) 2018 Team Roboctopi (#14496)
  * ------------------------------------------
@@ -75,8 +78,6 @@
  * ------------------------------------------
  */
 
-package org.firstinspires.ftc.teamcode;
-
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -102,7 +103,6 @@ public class  Tracks extends LinearOpMode {
     DcMotor Collector1;
     DcMotor Collector2;
     DcMotor lifter;
-    Servo LegoWheel;
 
     @Override
     public void runOpMode() throws InterruptedException { //When The OpMode Is Initialized
@@ -119,15 +119,8 @@ public class  Tracks extends LinearOpMode {
         Collector1 = hardwareMap.dcMotor.get("collector1");
         Collector2 = hardwareMap.dcMotor.get("collector2");
         lifter = hardwareMap.dcMotor.get("lifter");
-        LegoWheel = hardwareMap.servo.get("Lego");
-
         //The Right Motor Must Be Reversed To Function Correctly
         RightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        LegoWheel.setPosition(0);
-        lifter.setPower(1);
-        sleep(2700);
-        lifter.setPower(0);
 
         //Wait For The OpMode To Begin
         waitForStart();
