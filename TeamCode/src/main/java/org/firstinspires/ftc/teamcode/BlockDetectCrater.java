@@ -288,7 +288,7 @@ public class BlockDetectCrater extends LinearOpMode {
                                     forward(-5,0.5);
                                     Straw.setPosition(0.5);
                                     break;
-                                //(2.) If the gold is in the center position the robot:
+                                //(2.) If the gold is in the center position the robot: yaaaaaaaas
                                 } else if (goldMineralX > silverMineral1X || goldMineralX > silverMineral2X) {
                                     telemetry.addData("Gold Mineral Position", "Center");
                                     telemetry.update();
