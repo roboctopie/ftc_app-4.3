@@ -104,7 +104,7 @@ public class BlockDetectCrater extends LinearOpMode {
     DcMotor Collector;
     BNO055IMU imu;
     Orientation angles;
-
+    DcMotor lifter;
     private DistanceSensor distanceSensor;
     float basketPos = 185;
     private static final float mmPerInch        = 25.4f;
@@ -148,6 +148,7 @@ public class BlockDetectCrater extends LinearOpMode {
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
+        lifter = hardwareMap.dcMotor.get("lifter");
         RightMotor = hardwareMap.dcMotor.get("motor_right");
         LeftMotor = hardwareMap.dcMotor.get("motor_left");
         Arm = hardwareMap.dcMotor.get("arm");
@@ -241,11 +242,11 @@ public class BlockDetectCrater extends LinearOpMode {
                             //We added recognition.getTop()>500 to the if statement to ignore the minerals in the crater
                             //12-8-18 Fixed detection of minerals in crater.
                             for (Recognition recognition : updatedRecognitions) {
-                                if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)&&recognition.getTop()>500) {
+                                if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)&&recognition.getTop()>600) {
                                     goldMineralX = (int) recognition.getLeft();
-                                } else if (silverMineral1X == -1&&recognition.getTop()>500) {
+                                } else if (silverMineral1X == -1&&recognition.getTop()>600) {
                                     silverMineral1X = (int) recognition.getLeft();
-                                } else if(recognition.getTop()>500) {
+                                } else if(recognition.getTop()>600) {
                                     silverMineral2X = (int) recognition.getLeft();
                                 }
                             }
@@ -259,6 +260,7 @@ public class BlockDetectCrater extends LinearOpMode {
                                     telemetry.addData("Gold Mineral Position", "Left");
                                     telemetry.update();
                                     tfod.deactivate();
+                                    Lower();
                                     //(3a.) Drives forward a small amount
                                     forward(2,0.5);
                                     //(3b.) Turns 30° right or left depending on the gold position
@@ -293,6 +295,7 @@ public class BlockDetectCrater extends LinearOpMode {
                                     telemetry.addData("Gold Mineral Position", "Center");
                                     telemetry.update();
                                     tfod.deactivate();
+                                    Lower();
                                     //2b.) Drives forward and pushes the gold mineral out of the way and into crater
                                     forward(7,0.5);
                                     forward(-4.2,0.5);
@@ -322,6 +325,7 @@ public class BlockDetectCrater extends LinearOpMode {
                                     telemetry.addData("Gold Mineral Position", "Right");
                                     telemetry.update();
                                     tfod.deactivate();
+                                    Lower();
                                     forward(2,0.5);
                                     rotate(-32,0.5);
                                     forward(6,0.5);
@@ -367,6 +371,12 @@ public class BlockDetectCrater extends LinearOpMode {
     /**
      * Initialize the Vuforia localization engine.
      */
+    public void Lower()
+    {
+        lifter.setPower(-1);
+        sleep(2900);
+        lifter.setPower(0);
+    }
     private void initVuforia() {
         /*
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.

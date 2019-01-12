@@ -116,7 +116,7 @@ public class BlockDetectDepot extends LinearOpMode {
     private DcMotor Collector;
     private BNO055IMU imu;
     private DistanceSensor distanceSensor;
-
+    private DcMotor lifter;
     private static final float mmPerInch        = 25.4f;
     private static final float mmFTCFieldWidth  = (12*6) * mmPerInch;       // the width of the FTC field (from the center point to the outer panels)
     private static final float mmTargetHeight   = (6) * mmPerInch;          // the height of the center of the target image above the floor
@@ -165,6 +165,7 @@ public class BlockDetectDepot extends LinearOpMode {
         LeftMotor = hardwareMap.dcMotor.get("motor_left");
         CollectorLift = hardwareMap.dcMotor.get("collector1");
         Collector = hardwareMap.dcMotor.get("collector2");
+        lifter = hardwareMap.dcMotor.get("lifter");
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
@@ -271,6 +272,7 @@ public class BlockDetectDepot extends LinearOpMode {
                                     telemetry.addData("Gold Mineral Position", "Left");
                                     telemetry.update();
                                     tfod.deactivate();
+                                    Lower();
                                     forward(2,0.5);
 
                                     //(3a.) Turns 30° to the left
@@ -320,6 +322,7 @@ public class BlockDetectDepot extends LinearOpMode {
                                     telemetry.addData("Gold Mineral Position", "Center");
                                     telemetry.update();
                                     tfod.deactivate();
+                                    Lower();
                                     //Lowers the collection system
                                     CollectorLift.setPower(-1);
                                     sleep(650);
@@ -358,6 +361,7 @@ public class BlockDetectDepot extends LinearOpMode {
                                     telemetry.addData("Gold Mineral Position", "Right");
                                     telemetry.update();
                                     tfod.deactivate();
+                                    Lower();
                                     //tfod.shutdown();
                                     /*
                                     targetsRoverRuckus.activate();
@@ -448,6 +452,12 @@ public class BlockDetectDepot extends LinearOpMode {
     /**
      * Initialize the Vuforia localization engine.
      */
+    public void Lower()
+    {
+        lifter.setPower(-1);
+        sleep(2800);
+        lifter.setPower(0);
+    }
     private void initVuforia() {
         /*
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.

@@ -345,7 +345,7 @@ public class ConceptVuforiaNavRoverRuckus extends LinearOpMode {
             {
                 VectorF translation = pose.getTranslation();
                 degreesToTurn = -Math.toDegrees(Math.atan2(translation.get(0),-translation.get(2)));
-                telemetry.addData("meow",pose.getRow(0));
+                telemetry.addData("meow",translation);
                 telemetry.update();
             }
 
