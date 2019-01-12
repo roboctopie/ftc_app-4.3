@@ -77,19 +77,17 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import static java.lang.Math.abs;
 
-@TeleOp(name="Driver", group="Driver") //This is an OpMode named "Driver"
+@TeleOp(name="Sound Test", group="Driver") //This is an OpMode named "Driver"
 //@Disabled //This is Enabled
 
-public class  Tracks extends LinearOpMode {
+public class Tracks_Sound_Test extends LinearOpMode {
     //Define Misc. Variables
     private ElapsedTime runtime = new ElapsedTime();
     float basketPos = 180;
