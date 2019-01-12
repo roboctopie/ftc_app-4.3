@@ -28,7 +28,7 @@
  */
 
 
- /*
+/*
  * This i s roboctopi's V1 software for autonomous.
  * It was used at our first competition on 12/9/18 during the morning session at Francis Parker High School
  * This code runs these tasks in this order:
@@ -39,17 +39,17 @@
  * (2c.) Spits out our team marker into the depot
  * (2d.) Drives backward
  * (3.) If the robot detects that the gold is in the right or left position:
-  * (3a.) Turns 30° right or left depending on the gold position
-  * (3b.) Drives forward to move the gold mineral out of the way
-  * (3c.) Drives backward a small amount
-  * (3d.) Turns 60° in the other direction
-  * (3e.) Lowers collector
-  * (3f.) Drives forward into the depot
-  * (3g.) Spits out the team marker
-  * (3h.) Drives backward
-  * (3i.) If the cube was on the the right:
-  * (3i1.) Turns 90° clockwise
-  * (3i2.) Dives backward to clear lane
+ * (3a.) Turns 30° right or left depending on the gold position
+ * (3b.) Drives forward to move the gold mineral out of the way
+ * (3c.) Drives backward a small amount
+ * (3d.) Turns 60° in the other direction
+ * (3e.) Lowers collector
+ * (3f.) Drives forward into the depot
+ * (3g.) Spits out the team marker
+ * (3h.) Drives backward
+ * (3i.) If the cube was on the the right:
+ * (3i1.) Turns 90° clockwise
+ * (3i2.) Dives backward to clear lane
  */
 
 
@@ -116,7 +116,7 @@ public class BlockDetectDepot extends LinearOpMode {
     private DcMotor Collector;
     private BNO055IMU imu;
     private DistanceSensor distanceSensor;
-
+    private DcMotor lifter;
     private static final float mmPerInch        = 25.4f;
     private static final float mmFTCFieldWidth  = (12*6) * mmPerInch;       // the width of the FTC field (from the center point to the outer panels)
     private static final float mmTargetHeight   = (6) * mmPerInch;          // the height of the center of the target image above the floor
@@ -165,6 +165,7 @@ public class BlockDetectDepot extends LinearOpMode {
         LeftMotor = hardwareMap.dcMotor.get("motor_left");
         CollectorLift = hardwareMap.dcMotor.get("collector1");
         Collector = hardwareMap.dcMotor.get("collector2");
+        lifter = hardwareMap.dcMotor.get("lifter");
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
@@ -271,6 +272,7 @@ public class BlockDetectDepot extends LinearOpMode {
                                     telemetry.addData("Gold Mineral Position", "Left");
                                     telemetry.update();
                                     tfod.deactivate();
+                                    Lower();
                                     forward(2,0.5);
 
                                     //(3a.) Turns 30° to the left
@@ -320,6 +322,7 @@ public class BlockDetectDepot extends LinearOpMode {
                                     telemetry.addData("Gold Mineral Position", "Center");
                                     telemetry.update();
                                     tfod.deactivate();
+                                    Lower();
                                     //Lowers the collection system
                                     CollectorLift.setPower(-1);
                                     sleep(650);
@@ -358,6 +361,7 @@ public class BlockDetectDepot extends LinearOpMode {
                                     telemetry.addData("Gold Mineral Position", "Right");
                                     telemetry.update();
                                     tfod.deactivate();
+                                    Lower();
                                     //tfod.shutdown();
                                     /*
                                     targetsRoverRuckus.activate();
@@ -448,6 +452,12 @@ public class BlockDetectDepot extends LinearOpMode {
     /**
      * Initialize the Vuforia localization engine.
      */
+    public void Lower()
+    {
+        lifter.setPower(-1);
+        sleep(2900);
+        lifter.setPower(0);
+    }
     private void initVuforia() {
         /*
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.

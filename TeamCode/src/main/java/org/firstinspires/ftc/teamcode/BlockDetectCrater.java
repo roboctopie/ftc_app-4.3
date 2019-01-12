@@ -26,7 +26,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- /*
+/*
  * This i s roboctopi's V1 software for autonomous.
  * It was used at our first competition on 12/9/18 during the morning session at Francis Parker High School
  * This code runs these tasks in this order:
@@ -104,7 +104,7 @@ public class BlockDetectCrater extends LinearOpMode {
     DcMotor Collector;
     BNO055IMU imu;
     Orientation angles;
-
+    private DcMotor lifter;
     private DistanceSensor distanceSensor;
     float basketPos = 185;
     private static final float mmPerInch        = 25.4f;
@@ -156,6 +156,7 @@ public class BlockDetectCrater extends LinearOpMode {
         Collector = hardwareMap.dcMotor.get("collector2");
         distanceSensor = hardwareMap.get(DistanceSensor.class, "distance");
         Straw = hardwareMap.servo.get("Lego");
+        lifter = hardwareMap.dcMotor.get("lifter");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
@@ -249,7 +250,7 @@ public class BlockDetectCrater extends LinearOpMode {
                                     silverMineral2X = (int) recognition.getLeft();
                                 }
                             }
-                             //We had to modify the code that decided which position the gold was in because our robot can only see two minerals at the sme time
+                            //We had to modify the code that decided which position the gold was in because our robot can only see two minerals at the sme time
                             if ((goldMineralX != -1 && silverMineral1X != -1) ||(silverMineral2X != -1&&goldMineralX != -1)||(silverMineral2X != -1&&silverMineral1X != -1)) {
                                 telemetry.addData("a",goldMineralX);
                                 telemetry.addData("a",silverMineral1X);
@@ -259,6 +260,7 @@ public class BlockDetectCrater extends LinearOpMode {
                                     telemetry.addData("Gold Mineral Position", "Left");
                                     telemetry.update();
                                     tfod.deactivate();
+                                    Lower();
                                     //(3a.) Drives forward a small amount
                                     forward(2,0.5);
                                     //(3b.) Turns 30° right or left depending on the gold position
@@ -288,11 +290,12 @@ public class BlockDetectCrater extends LinearOpMode {
                                     forward(-5,0.5);
                                     Straw.setPosition(0.5);
                                     break;
-                                //(2.) If the gold is in the center position the robot: yaaaaaaaas
+                                    //(2.) If the gold is in the center position the robot:
                                 } else if (goldMineralX > silverMineral1X || goldMineralX > silverMineral2X) {
                                     telemetry.addData("Gold Mineral Position", "Center");
                                     telemetry.update();
                                     tfod.deactivate();
+                                    Lower();
                                     //2b.) Drives forward and pushes the gold mineral out of the way and into crater
                                     forward(7,0.5);
                                     forward(-4.2,0.5);
@@ -322,6 +325,7 @@ public class BlockDetectCrater extends LinearOpMode {
                                     telemetry.addData("Gold Mineral Position", "Right");
                                     telemetry.update();
                                     tfod.deactivate();
+                                    Lower();
                                     forward(2,0.5);
                                     rotate(-32,0.5);
                                     forward(6,0.5);
@@ -360,13 +364,19 @@ public class BlockDetectCrater extends LinearOpMode {
 
         }
 
-        }
+    }
 
 
 
     /**
      * Initialize the Vuforia localization engine.
      */
+    public void Lower()
+    {
+        lifter.setPower(-1);
+        sleep(2900);
+        lifter.setPower(0);
+    }
     private void initVuforia() {
         /*
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
