@@ -124,11 +124,12 @@ public class  Tracks extends LinearOpMode {
         //The Right Motor Must Be Reversed To Function Correctly
         RightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        LegoWheel.setPosition(0);
+        LegoWheel.setPosition(1);
+        /*
         lifter.setPower(1);
         sleep(2700);
         lifter.setPower(0);
-
+*/
         //Wait For The OpMode To Begin
         waitForStart();
 
@@ -185,11 +186,11 @@ public class  Tracks extends LinearOpMode {
                 Thread.sleep(750);
                 basketPos=180;
             }
-            Collector1.setPower(-gamepad2.right_stick_y );
-            Collector2.setPower(gamepad2.left_stick_y/2);
+            Collector1.setPower(-gamepad2.right_stick_y*0.75);
+            Collector2.setPower(gamepad2.left_stick_y*0.5);
             Basket.setPosition(basketPos/180);
             lifter.setPower(gamepad1.left_trigger-gamepad1.right_trigger);
-            Arm.setPower(gamepad2.right_trigger-gamepad2.left_trigger);
+            Arm.setPower((gamepad2.left_trigger-gamepad2.right_trigger)/2);
             LeftMotor.setPower(gamepad1.left_stick_y-gamepad1.right_stick_x);
             RightMotor.setPower(gamepad1.left_stick_y+gamepad1.right_stick_x);
             telemetry.update();

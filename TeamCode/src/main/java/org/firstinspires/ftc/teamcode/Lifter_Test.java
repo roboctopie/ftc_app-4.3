@@ -55,11 +55,11 @@ public class Lifter_Test extends LinearOpMode {
         //while (opModeIsActive()) {
         //lifter.setPower(gamepad1.left_stick_y);
         lifter.setPower(-1);
-        sleep(650);
+        sleep(90);
         lifter.setPower(0);
         sleep(1000);
         lifter.setPower(1);
-        sleep(800);
+        sleep(350);
         lifter.setPower(0);
         telemetry.update();
         //}
