@@ -114,25 +114,33 @@ public class IMU_Test extends LinearOpMode {
             break;
         }
     }
+    //this code was added on 12/2/18
     public void Turn(float degrees, DcMotor right_Motor, DcMotor left_Motor, BNO055IMU imu)
     {
+        //Declares variables
         Orientation angles = imu.getAngularOrientation();
         double delta = degrees-angles.firstAngle;
         double minSpeed= 0.55;
+        //Repeats until the robot reaches position
         while(!((angles.firstAngle+delta)-1<0&&(angles.firstAngle+delta)+1>0))
         {
+            //Sets he motor powers
             if(-(angles.firstAngle+delta)/100>0)left_Motor.setPower((-(angles.firstAngle+delta)/100)+minSpeed);
             else left_Motor.setPower((-(angles.firstAngle+delta)/100)-minSpeed);
             if((angles.firstAngle+delta)/100>0)right_Motor.setPower(((angles.firstAngle+delta)/100)+minSpeed);
             else right_Motor.setPower(((angles.firstAngle+delta)/100)-minSpeed);
+            //Gets the currant angle
             angles = imu.getAngularOrientation();
+            //Adds telemetry
             telemetry.addData("IMU Angle 1", angles.firstAngle);
-            telemetry.addData("b",angles.firstAngle+delta);
+            telemetry.addData("IMU with delta",angles.firstAngle+delta);
             telemetry.update();
             sleep(100);
         }
+        //Stops the motors
         left_Motor.setPower(0);
         right_Motor.setPower(0);
+        //DEBUG
         sleep(1000);
         angles = imu.getAngularOrientation();
         telemetry.addData("IMU Angle 1", angles.firstAngle);

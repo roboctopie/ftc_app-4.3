@@ -77,19 +77,17 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import static java.lang.Math.abs;
 
-@TeleOp(name="Driver", group="Driver") //This is an OpMode named "Driver"
+@TeleOp(name="Sound Test", group="Driver") //This is an OpMode named "Driver"
 //@Disabled //This is Enabled
 
-public class  Tracks extends LinearOpMode {
+public class Tracks_Sound_Test extends LinearOpMode {
     //Define Misc. Variables
     private ElapsedTime runtime = new ElapsedTime();
     float basketPos = 180;
@@ -124,12 +122,11 @@ public class  Tracks extends LinearOpMode {
         //The Right Motor Must Be Reversed To Function Correctly
         RightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        LegoWheel.setPosition(1);
-        /*
+        LegoWheel.setPosition(0);
         lifter.setPower(1);
         sleep(2700);
         lifter.setPower(0);
-*/
+
         //Wait For The OpMode To Begin
         waitForStart();
 
@@ -186,11 +183,11 @@ public class  Tracks extends LinearOpMode {
                 Thread.sleep(750);
                 basketPos=180;
             }
-            Collector1.setPower(-gamepad2.right_stick_y*0.75);
-            Collector2.setPower(gamepad2.left_stick_y*0.5);
+            Collector1.setPower(-gamepad2.right_stick_y );
+            Collector2.setPower(gamepad2.left_stick_y/2);
             Basket.setPosition(basketPos/180);
             lifter.setPower(gamepad1.left_trigger-gamepad1.right_trigger);
-            Arm.setPower((gamepad2.left_trigger-gamepad2.right_trigger)/2);
+            Arm.setPower(gamepad2.right_trigger-gamepad2.left_trigger);
             LeftMotor.setPower(gamepad1.left_stick_y-gamepad1.right_stick_x);
             RightMotor.setPower(gamepad1.left_stick_y+gamepad1.right_stick_x);
             telemetry.update();

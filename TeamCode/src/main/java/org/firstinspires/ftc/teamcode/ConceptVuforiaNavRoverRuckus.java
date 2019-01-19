@@ -273,8 +273,7 @@ public class ConceptVuforiaNavRoverRuckus extends LinearOpMode {
         /** Start tracking the data sets we care about. */
         targetsRoverRuckus.activate();
         while (opModeIsActive()) {
-            telemetry.addData("vTest",getTarget(allTrackables,3));
-            telemetry.update();
+
             /*
 
             // check all the trackable target to see which one (if any) is visible.
@@ -311,11 +310,44 @@ public class ConceptVuforiaNavRoverRuckus extends LinearOpMode {
             telemetry.update();
 
             */
+            telemetry.addData("",get90(allTrackables));
+            telemetry.update();
+        //telemetry.addData(":::::::::::::::::::::::::::::::",getVuPos(allTrackables));
+        //telemetry.update();
         }
 
     }
     public static boolean getTarget(List<VuforiaTrackable> trackables,int target)
     {
         return ((VuforiaTrackableDefaultListener)trackables.get(target).getListener()).isVisible();
+    }
+    public double getVuPos(List<VuforiaTrackable>allTrackables)
+    {
+
+        double degreesToTurn = 0;
+        for(VuforiaTrackable trackable : allTrackables)
+        {
+            OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) trackable.getListener()).getPose();
+            if(pose != null)
+            {
+                VectorF translation = pose.getTranslation();
+                degreesToTurn = -Math.toDegrees(Math.atan2(translation.get(0),-translation.get(2)));
+            }
+        }
+        return degreesToTurn;
+    }
+    public float get90(List<VuforiaTrackable>allTrackables) {
+        Orientation rotation = null;
+        while (rotation == null) {
+            for (VuforiaTrackable trackable : allTrackables) {
+                OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) trackable.getListener()).getPose();
+                // express position (translation) of robot in inches.
+                if (pose != null) {
+                    // express the rotation of the robot in degrees.
+                    rotation = Orientation.getOrientation(pose, EXTRINSIC, XYZ, DEGREES);
+                }
+            }
+        }
+            return rotation.secondAngle;
     }
 }
