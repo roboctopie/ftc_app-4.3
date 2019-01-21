@@ -68,7 +68,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
  */
 
 @TeleOp(name="Concept: Sound Resources", group="Concept")
-//@Disabled
+@Disabled
 public class Sound_test_2 extends LinearOpMode {
 
     // Declare OpMode members.

@@ -226,7 +226,7 @@ public class BlockDetectCrater extends LinearOpMode {
             if (tfod != null) {
                 tfod.activate();
             }
-
+            runtime.reset();
             while (opModeIsActive()) {
                 if (tfod != null) {
                     // getUpdatedRecognitions() will return null if no new information is available since
@@ -251,12 +251,12 @@ public class BlockDetectCrater extends LinearOpMode {
                                 }
                             }
                             //We had to modify the code that decided which position the gold was in because our robot can only see two minerals at the sme time
-                            if ((goldMineralX != -1 && silverMineral1X != -1) ||(silverMineral2X != -1&&goldMineralX != -1)||(silverMineral2X != -1&&silverMineral1X != -1)) {
+                            if (((goldMineralX != -1 && silverMineral1X != -1) ||(silverMineral2X != -1&&goldMineralX != -1)||(silverMineral2X != -1&&silverMineral1X != -1))||runtime.milliseconds() > 8000) {
                                 telemetry.addData("a",goldMineralX);
                                 telemetry.addData("a",silverMineral1X);
                                 telemetry.addData("a",silverMineral2X);
                                 //(3.) If the robot detects that the gold is in the right or left position:
-                                if ((goldMineralX < silverMineral1X || goldMineralX < silverMineral2X) && goldMineralX != -1) {
+                                if (((goldMineralX < silverMineral1X || goldMineralX < silverMineral2X) && goldMineralX != -1)) {
                                     telemetry.addData("Gold Mineral Position", "Left");
                                     telemetry.update();
                                     tfod.deactivate();
@@ -272,27 +272,29 @@ public class BlockDetectCrater extends LinearOpMode {
                                     forward(6.3,0.5);
                                     targetsRoverRuckus.activate();
 
-                                    rotate(getDegToTurn(allTrackables),0.5);
+                                    rotate(getDegToTurn(allTrackables),0.65);
 
-                                    while (distanceSensor.getDistance(DistanceUnit.INCH) > 10.5&&opModeIsActive())
+                                    /*while (distanceSensor.getDistance(DistanceUnit.INCH) > 10.5&&opModeIsActive())
                                     {
                                         RightMotor.setPower(0.5);
                                         LeftMotor.setPower(0.5);
-                                    }
-                                    rotate(79.85,0.65);
+                                    }*/
+                                    forward(3,0.5);
+                                    rotate(74.7,0.65);
                                     forward(8,0.5);
 
                                     FrunkDown();
                                     Barf();
+
                                     FrunkUp();
                                     forward(-5,0.5);
-                                    rotate(7,.65);
+                                    rotate(13,.65);
                                     forward(-4,0.5);
                                     Straw.setPosition(0.5);
                                     LowerLifterDown();
                                     break;
                                     //(2.) If the gold is in the center position the robot:
-                                } else if (goldMineralX > silverMineral1X || goldMineralX > silverMineral2X) {
+                                } else if ((goldMineralX > silverMineral1X || goldMineralX > silverMineral2X)||runtime.milliseconds() > 8000  ) {
                                     telemetry.addData("Gold Mineral Position", "Center");
                                     telemetry.update();
                                     tfod.deactivate();
@@ -304,21 +306,22 @@ public class BlockDetectCrater extends LinearOpMode {
                                     forward(6.2,0.5);
                                     targetsRoverRuckus.activate();
 
-                                    rotate(getDegToTurn(allTrackables),0.5);
+                                    rotate(getDegToTurn(allTrackables),0.65);
 
-                                    while (distanceSensor.getDistance(DistanceUnit.INCH) > 10.5&&opModeIsActive())
+                                    /*while (distanceSensor.getDistance(DistanceUnit.INCH) > 10.5&&opModeIsActive())
                                     {
                                         RightMotor.setPower(0.5);
                                         LeftMotor.setPower(0.5);
-                                    }
-                                    rotate(79.85,0.65);
+                                    }*/
+                                    forward(3,0.5);
+                                    rotate(78,0.65);
                                     forward(8,0.5);
 
                                     FrunkDown();
                                     Barf();
                                     FrunkUp();
                                     forward(-5,0.5);
-                                    rotate(7,.65);
+                                    rotate(13,.65);
                                     forward(-4,0.5);
                                     Straw.setPosition(0.5);
                                     LowerLifterDown();
@@ -332,17 +335,18 @@ public class BlockDetectCrater extends LinearOpMode {
                                     rotate(-32,0.65);
                                     forward(6,0.5);
                                     forward(-6,0.5);
-                                    rotate(90,0.65);
+                                    rotate(85,0.65);
                                     forward(6,0.5);
                                     targetsRoverRuckus.activate();
 
-                                    rotate(getDegToTurn(allTrackables),0.5);
+                                    rotate(getDegToTurn(allTrackables),0.65);
 
-                                    while (distanceSensor.getDistance(DistanceUnit.INCH) > 10.5&&opModeIsActive())
+                                    /*while (distanceSensor.getDistance(DistanceUnit.INCH) > 10.5&&opModeIsActive())
                                     {
                                         RightMotor.setPower(0.5);
                                         LeftMotor.setPower(0.5);
-                                    }
+                                    }*/
+                                    forward(3,0.5);
                                     rotate(79.85,0.65);
                                     forward(8,0.5);
 
@@ -350,7 +354,7 @@ public class BlockDetectCrater extends LinearOpMode {
                                     Barf();
                                     FrunkUp();
                                     forward(-5,0.5);
-                                    rotate(7,.65);
+                                    rotate(13,.65);
                                     forward(-4,0.5);
                                     Straw.setPosition(0.5);
                                     LowerLifterDown();
@@ -408,6 +412,7 @@ public class BlockDetectCrater extends LinearOpMode {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
                 "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+        tfodParameters.minimumConfidence = 0.3;
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
     }
@@ -556,7 +561,7 @@ public class BlockDetectCrater extends LinearOpMode {
     public double getDegToTurn(List<VuforiaTrackable>allTrackables)
     {
         Orientation rotation = null;
-        while (rotation == null) {
+        while (rotation == null&&opModeIsActive()) {
             for (VuforiaTrackable trackable : allTrackables) {
                 OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) trackable.getListener()).getPose();
                 // express position (translation) of robot in inches.

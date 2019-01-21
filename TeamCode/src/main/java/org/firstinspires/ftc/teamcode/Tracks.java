@@ -186,10 +186,18 @@ public class  Tracks extends LinearOpMode {
                 Thread.sleep(750);
                 basketPos=180;
             }
+            if(gamepad2.right_bumper&&gamepad1.right_trigger==0&&gamepad1.right_trigger==0)
+            {
+                lifter.setPower(-1);
+            }
+            else
+            {
+                lifter.setPower(gamepad1.left_trigger-gamepad1.right_trigger);
+            }
             Collector1.setPower(-gamepad2.right_stick_y*0.75);
             Collector2.setPower(gamepad2.left_stick_y*0.5);
             Basket.setPosition(basketPos/180);
-            lifter.setPower(gamepad1.left_trigger-gamepad1.right_trigger);
+            //lifter.setPower(gamepad1.left_trigger-gamepad1.right_trigger);
             Arm.setPower((gamepad2.left_trigger-gamepad2.right_trigger)/2);
             LeftMotor.setPower(gamepad1.left_stick_y-gamepad1.right_stick_x);
             RightMotor.setPower(gamepad1.left_stick_y+gamepad1.right_stick_x);

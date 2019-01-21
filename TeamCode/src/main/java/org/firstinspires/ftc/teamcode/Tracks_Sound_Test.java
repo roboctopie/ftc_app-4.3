@@ -77,6 +77,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -85,7 +86,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name="Sound Test", group="Driver") //This is an OpMode named "Driver"
-//@Disabled //This is Enabled
+@Disabled //This is disabled
 
 public class Tracks_Sound_Test extends LinearOpMode {
     //Define Misc. Variables

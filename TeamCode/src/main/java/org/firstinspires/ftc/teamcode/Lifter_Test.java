@@ -36,7 +36,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name="Lifter Test", group="Test")
-//@Disabled
+@Disabled
 public class Lifter_Test extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
