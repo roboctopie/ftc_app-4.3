@@ -548,7 +548,7 @@ public class BlockDetectCrater extends LinearOpMode {
     }
     public void FrunkDown() {
         CollectorLift.setPower(-1);
-        sleep(90);
+        sleep(250);
         CollectorLift.setPower(0);
         sleep(500);
     }

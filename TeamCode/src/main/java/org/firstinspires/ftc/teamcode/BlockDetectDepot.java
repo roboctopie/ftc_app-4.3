@@ -254,7 +254,7 @@ public class BlockDetectDepot extends LinearOpMode {
                     if (updatedRecognitions != null) {
                         telemetry.addData("# Object Detected", updatedRecognitions.size());
                         telemetry.addData("time",runtime.milliseconds() > 8000);
-                        if (updatedRecognitions.size() >= 2) {
+                        if (updatedRecognitions.size() >= 2||runtime.milliseconds() > 8000) {
                             int goldMineralX = -1;
                             int silverMineral1X = -1;
                             int silverMineral2X = -1;
@@ -271,7 +271,7 @@ public class BlockDetectDepot extends LinearOpMode {
                             }
 
 
-                            if (((goldMineralX != -1 && silverMineral1X != -1) ||(silverMineral2X != -1&&goldMineralX != -1)||(silverMineral2X != -1&&silverMineral1X != -1)))  {
+                            if (((goldMineralX != -1 && silverMineral1X != -1) ||(silverMineral2X != -1&&goldMineralX != -1)||(silverMineral2X != -1&&silverMineral1X != -1))||runtime.milliseconds() > 8000)  {
                                 // (3.) If the robot detects that the gold is in the right or left position
                                 telemetry.addData("a",goldMineralX);
                                 telemetry.addData("a",silverMineral1X);
@@ -293,9 +293,7 @@ public class BlockDetectDepot extends LinearOpMode {
                                     rotate(-60,0.7);
 
                                     // (3e.) Lowers collector
-                                    CollectorLift.setPower(-1);
-                                    sleep(90);
-                                    CollectorLift.setPower(0);
+                                    FrunkDown();
                                     sleep(500);
                                     // (3f.) Drives forward into the depot
                                     //forward(5,0.5);
@@ -304,9 +302,7 @@ public class BlockDetectDepot extends LinearOpMode {
                                     Collector.setPower(1);
                                     sleep(350);
                                     Collector.setPower(0);
-                                    CollectorLift.setPower(1);
-                                    sleep(350);
-                                    CollectorLift.setPower(0);
+                                    FrunkUp();
                                     //(3h.) Drives backward
                                     forward(-4,0.5);
                                     rotate(75,0.75);
@@ -321,22 +317,18 @@ public class BlockDetectDepot extends LinearOpMode {
                                     forward(3,0.5);
                                     rotate(67.5,0.685);
                                     forward(7,0.6);
-                                    CollectorLift.setPower(-1);
-                                    sleep(90);
-                                    CollectorLift.setPower(0);
+                                    FrunkDown();
                                     LowerLifterDown();
                                     break;
                                 }
                                 //(2.) Checks if the gold is in the center position the robot
-                                else if ((goldMineralX > silverMineral1X || goldMineralX > silverMineral2X)){
+                                else if ((goldMineralX > silverMineral1X || goldMineralX > silverMineral2X)||runtime.milliseconds() > 8000){
                                     telemetry.addData("Gold Mineral Position", "Center");
                                     telemetry.update();
                                     tfod.deactivate();
                                     Lower();
                                     //Lowers the collection system
-                                    CollectorLift.setPower(-1);
-                                    sleep(90);
-                                    CollectorLift.setPower(0);
+                                    FrunkDown();
 
                                     //Drives forward and pushes the gold mineral out of th way
                                     forward(6,0.6);
@@ -344,9 +336,7 @@ public class BlockDetectDepot extends LinearOpMode {
                                     Collector.setPower(1);
                                     sleep(600);
                                     Collector.setPower(0);
-                                    CollectorLift.setPower(1);
-                                    sleep(350);
-                                    CollectorLift.setPower(0);
+                                    FrunkUp();
                                     forward(-1.4,0.5);
                                     rotate(86,0.7);
                                     forward(4,0.6);
@@ -362,9 +352,7 @@ public class BlockDetectDepot extends LinearOpMode {
                                     forward(4,0.5);
                                     rotate(65 ,0.65);
                                     forward(7,0.6);
-                                    CollectorLift.setPower(-1);
-                                    sleep(90);
-                                    CollectorLift.setPower(0);
+                                    FrunkDown();
                                     LowerLifterDown();
                                     break;
                                 }
@@ -408,9 +396,7 @@ public class BlockDetectDepot extends LinearOpMode {
                                     rotate(50,0.65);
 
                                     // (3e.) Lowers collector
-                                    CollectorLift.setPower(-1);
-                                    sleep(90);
-                                    CollectorLift.setPower(0);
+                                    
                                     sleep(500);
 
                                     // (3f.) Drives forward into the depot
@@ -420,9 +406,7 @@ public class BlockDetectDepot extends LinearOpMode {
                                     Collector.setPower(1);
                                     sleep(350);
                                     Collector.setPower(0);
-                                    CollectorLift.setPower(1);
-                                    sleep(350);
-                                    CollectorLift.setPower(0);
+                                    FrunkUp();
                                     // (3h.) Drives backward
                                     forward(-3,0.5);
 
@@ -443,9 +427,7 @@ public class BlockDetectDepot extends LinearOpMode {
                                     forward(4,0.5);
                                     rotate(65,0.7);
                                     forward(7,0.6);
-                                    CollectorLift.setPower(-1);
-                                    sleep(90);
-                                    CollectorLift.setPower(0);
+                                    FrunkDown();
                                     LowerLifterDown();
                                     break;
 
@@ -467,12 +449,25 @@ public class BlockDetectDepot extends LinearOpMode {
     /**
      * Initialize the Vuforia localization engine.
      */
+    void FrunkDown()
+    {
+        CollectorLift.setPower(-1);
+        sleep(250);
+        CollectorLift.setPower(0);
+    }
+    void FrunkUp()
+    {
+        CollectorLift.setPower(1);
+        sleep(350);
+        CollectorLift.setPower(0);
+    }
     public void Lower()
     {
         lifter.setPower(-1);
         sleep(2900);
         lifter.setPower(0);
     }
+    
     private void initVuforia() {
         /*
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.

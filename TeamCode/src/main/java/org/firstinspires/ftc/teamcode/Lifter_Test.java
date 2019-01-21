@@ -36,7 +36,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name="Lifter Test", group="Test")
-@Disabled
+//@Disabled
 public class Lifter_Test extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
@@ -55,7 +55,7 @@ public class Lifter_Test extends LinearOpMode {
         //while (opModeIsActive()) {
         //lifter.setPower(gamepad1.left_stick_y);
         lifter.setPower(-1);
-        sleep(90);
+        sleep(250);
         lifter.setPower(0);
         sleep(1000);
         lifter.setPower(1);
