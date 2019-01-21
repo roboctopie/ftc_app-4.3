@@ -403,6 +403,7 @@ public class BlockDetectDepot extends LinearOpMode {
                                     //forward(5,0.5);
 
                                     // (3g.) Spits out the team marker
+                                    FrunkDown();
                                     Collector.setPower(1);
                                     sleep(350);
                                     Collector.setPower(0);
