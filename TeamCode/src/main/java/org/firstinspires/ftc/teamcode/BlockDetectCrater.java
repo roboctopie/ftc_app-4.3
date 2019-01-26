@@ -281,15 +281,14 @@ public class BlockDetectCrater extends LinearOpMode {
                                     }*/
                                     forward(3,0.5);
                                     rotate(74.7,0.65);
-                                    forward(8,0.5);
+                                    forward(9.685 ,0.5);
 
                                     FrunkDown();
                                     Barf();
-
                                     FrunkUp();
                                     forward(-5,0.5);
                                     rotate(13,.65);
-                                    forward(-4,0.5);
+                                    forward(-6,0.5);
                                     Straw.setPosition(0.5);
                                     LowerLifterDown();
                                     break;
@@ -315,14 +314,14 @@ public class BlockDetectCrater extends LinearOpMode {
                                     }*/
                                     forward(3,0.5);
                                     rotate(78,0.65);
-                                    forward(8,0.5);
+                                    forward(9.685,0.5);
 
                                     FrunkDown();
                                     Barf();
                                     FrunkUp();
                                     forward(-5,0.5);
                                     rotate(13,.65);
-                                    forward(-4,0.5);
+                                    forward(-6,0.5);
                                     Straw.setPosition(0.5);
                                     LowerLifterDown();
                                     break;
@@ -348,14 +347,14 @@ public class BlockDetectCrater extends LinearOpMode {
                                     }*/
                                     forward(3,0.5);
                                     rotate(79.85,0.65);
-                                    forward(8,0.5);
+                                    forward(9.685,0.5);
 
                                     FrunkDown();
                                     Barf();
                                     FrunkUp();
                                     forward(-5,0.5);
                                     rotate(13,.65);
-                                    forward(-4,0.5);
+                                    forward(-6,0.5);
                                     Straw.setPosition(0.5);
                                     LowerLifterDown();
                                     break;
@@ -547,15 +546,14 @@ public class BlockDetectCrater extends LinearOpMode {
         LeftMotor.setPower(0);
     }
     public void FrunkDown() {
-        CollectorLift.setPower(-1);
-        sleep(250);
+        CollectorLift.setPower(-0.5);
+        sleep(420);
         CollectorLift.setPower(0);
-        sleep(500);
     }
     public void FrunkUp() {
 
-        CollectorLift.setPower(1);
-        sleep(350);
+        CollectorLift.setPower(0.5);
+        sleep(930);
         CollectorLift.setPower(0);
     }
     public double getDegToTurn(List<VuforiaTrackable>allTrackables)

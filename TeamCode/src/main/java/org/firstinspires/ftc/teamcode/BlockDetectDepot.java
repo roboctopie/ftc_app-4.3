@@ -450,16 +450,15 @@ public class BlockDetectDepot extends LinearOpMode {
     /**
      * Initialize the Vuforia localization engine.
      */
-    void FrunkDown()
-    {
-        CollectorLift.setPower(-1);
-        sleep(250);
+    void FrunkDown() {
+        CollectorLift.setPower(-0.5);
+        sleep(420);
         CollectorLift.setPower(0);
     }
     void FrunkUp()
     {
-        CollectorLift.setPower(1);
-        sleep(350);
+        CollectorLift.setPower(0.5);
+        sleep(930);
         CollectorLift.setPower(0);
     }
     public void Lower()
