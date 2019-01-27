@@ -92,7 +92,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
  */
 
 @TeleOp(name="Concept: Vuforia Rover Nav", group ="Concept")
-//@Disabled
+@Disabled
 public class ConceptVuforiaNavRoverRuckus extends LinearOpMode {
 
     /*
@@ -310,7 +310,8 @@ public class ConceptVuforiaNavRoverRuckus extends LinearOpMode {
             telemetry.update();
 
             */
-            get90(allTrackables);
+            telemetry.addData("",get90(allTrackables));
+            telemetry.update();
         //telemetry.addData(":::::::::::::::::::::::::::::::",getVuPos(allTrackables));
         //telemetry.update();
         }
@@ -335,22 +336,18 @@ public class ConceptVuforiaNavRoverRuckus extends LinearOpMode {
         }
         return degreesToTurn;
     }
-    public int get90(List<VuforiaTrackable>allTrackables)
-    {
-        double degreesToTurn = 0;
-        for(VuforiaTrackable trackable : allTrackables)
-        {
-            OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) trackable.getListener()).getPose();
-            if(pose != null)
-            {
-                VectorF translation = pose.getTranslation();
-                degreesToTurn = -Math.toDegrees(Math.atan2(translation.get(0),-translation.get(2)));
-                telemetry.addData("meow",translation);
-                telemetry.update();
+    public float get90(List<VuforiaTrackable>allTrackables) {
+        Orientation rotation = null;
+        while (rotation == null) {
+            for (VuforiaTrackable trackable : allTrackables) {
+                OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) trackable.getListener()).getPose();
+                // express position (translation) of robot in inches.
+                if (pose != null) {
+                    // express the rotation of the robot in degrees.
+                    rotation = Orientation.getOrientation(pose, EXTRINSIC, XYZ, DEGREES);
+                }
             }
-
         }
-
-        return 0;
+            return rotation.secondAngle;
     }
 }

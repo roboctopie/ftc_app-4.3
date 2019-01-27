@@ -26,29 +26,46 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+
 /*
  * This i s roboctopi's V1 software for autonomous.
  * It was used at our first competition on 12/9/18 during the morning session at Francis Parker High School
  * This code runs these tasks in this order:
  * (1.) Detects the minerals in the sampling position
  * (2.) If the gold is in the center position the robot:
- *  (2b.) Drives forward and pushes the gold mineral out of the way and into crater
+ * (2a.) Lowers the collection system and
+ * (2b.) Drives forward and pushes the gold mineral out of th way
+ * (2c.) Spits out our team marker into the depot
+ * (2d.) Drives backward
  * (3.) If the robot detects that the gold is in the right or left position:
- *  (3a.) Drives forward a small amount
- *  (3b.) Turns 30° right or left depending on the gold position
- *  (3c.) Drives forward to move the gold mineral out of the way
+ * (3a.) Turns 30° right or left depending on the gold position
+ * (3b.) Drives forward to move the gold mineral out of the way
+ * (3c.) Drives backward a small amount
+ * (3d.) Turns 60° in the other direction
+ * (3e.) Lowers collector
+ * (3f.) Drives forward into the depot
+ * (3g.) Spits out the team marker
+ * (3h.) Drives backward
+ * (3i.) If the cube was on the the right:
+ * (3i1.) Turns 90° clockwise
+ * (3i2.) Dives backward to clear lane
  */
+
+
+
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.vuforia.CameraDevice;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -56,7 +73,6 @@ import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
@@ -86,37 +102,33 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@Autonomous(name = "Block Detector Crater", group = "Block Detector")
-//@Disabled
-public class BlockDetectCrater extends LinearOpMode {
+@Autonomous(name = "Block Detector Depot EMERGENCY LIGHTS", group = "Block Detector")
+@Disabled
+public class BlockDetectDepotLights extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
     private static final String LABEL_SILVER_MINERAL = "Silver Mineral";
     private ElapsedTime runtime = new ElapsedTime();
-    Orientation      lastAngles = new Orientation();
-    double globalAngle,   power = .30, correction;
-    DcMotor RightMotor;
-    DcMotor LeftMotor;
-    DcMotor Arm;
-    Servo Basket;
-    Servo Straw;
-    DcMotor CollectorLift;
-    DcMotor Collector;
-    BNO055IMU imu;
-    Orientation angles;
-    private DcMotor lifter;
+    private Orientation             lastAngles = new Orientation();
+    private double globalAngle;
+    private DcMotor RightMotor;
+    private DcMotor LeftMotor;
+    private DcMotor CollectorLift;
+    private DcMotor Collector;
+    private BNO055IMU imu;
     private DistanceSensor distanceSensor;
-    float basketPos = 185;
+    private DcMotor lifter;
     private static final float mmPerInch        = 25.4f;
     private static final float mmFTCFieldWidth  = (12*6) * mmPerInch;       // the width of the FTC field (from the center point to the outer panels)
     private static final float mmTargetHeight   = (6) * mmPerInch;          // the height of the center of the target image above the floor
 
     // Select which camera you want use.  The FRONT camera is the one on the same side as the screen.
     // Valid choices are:  BACK or FRONT
-    private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
+    private static final CameraDirection CAMERA_CHOICE = BACK;
 
     private OpenGLMatrix lastLocation = null;
     private boolean targetVisible = false;
+
     /*
      * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
      * 'parameters.vuforiaLicenseKey' is initialized is for illustration only, and will not function.
@@ -131,13 +143,13 @@ public class BlockDetectCrater extends LinearOpMode {
      */
     private static final String VUFORIA_KEY = "AW/aXP//////AAABmUL6p+56MU6rnqNxEkLhIJgblkVek4ygJheFrXngFLjvVakXKX/d9N3+Wtybm3PrmjrNzp607yhCTqDte6AjO3rMnKs9ZsEi2j63SySN51RRwuwxdqHkh1vAP+2pIMBtlGISJEMCnIX5PQ0dlbt7GUS16ca0vqkvqDwyN9/OBVbMlYrawCw8ttpOXWjxl4pDnqodRByM+LOMKVANu/jYjkSzDwuX79yw8kUqEDEOytePg8C+3is7mfwI93zTwv3s72Wn7YTF9G9Vkcf9h5y5qFEdP3liEm+V/sibPYsL+TWkZPz4N6XImJtCvcxGKe+4FW9gn40Q0YtKA6kuk8EX+5tjpQVzfmzknvwjE2abewZy";
 
-    /**
+    /*
      * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
      * localization engine.
      */
     private VuforiaLocalizer vuforia;
 
-    /**
+    /*
      * {@link #tfod} is the variable we will use to store our instance of the Tensor Flow Object
      * Detection engine.
      */
@@ -145,18 +157,17 @@ public class BlockDetectCrater extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        // Initialize the hardware variables. Note that the strings used here as parameters
-        // to 'get' must correspond to the names assigned during the robot configuration
-        // step (using the FTC Robot Controller app on the phone).
+        /*
+         Initialize the hardware variables. Note that the strings used here as parameters
+         to 'get' must correspond to the names assigned during the robot configuration
+         step (using the FTC Robot Controller app on the phone).
+        */
         RightMotor = hardwareMap.dcMotor.get("motor_right");
         LeftMotor = hardwareMap.dcMotor.get("motor_left");
-        Arm = hardwareMap.dcMotor.get("arm");
-        Basket = hardwareMap.servo.get("basket");
         CollectorLift = hardwareMap.dcMotor.get("collector1");
         Collector = hardwareMap.dcMotor.get("collector2");
-        distanceSensor = hardwareMap.get(DistanceSensor.class, "distance");
-        Straw = hardwareMap.servo.get("Lego");
         lifter = hardwareMap.dcMotor.get("lifter");
+
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
@@ -166,14 +177,17 @@ public class BlockDetectCrater extends LinearOpMode {
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
+        distanceSensor = hardwareMap.get(DistanceSensor.class, "distance");
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
         // first.
         // Most robots need the motor on one side to be reversed to drive forward
         LeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parametersVu = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
         parametersVu.vuforiaLicenseKey = VUFORIA_KEY ;
         parametersVu.cameraDirection   = CAMERA_CHOICE;
+
         vuforia = ClassFactory.getInstance().createVuforia(parametersVu);
         VuforiaTrackables targetsRoverRuckus = this.vuforia.loadTrackablesFromAsset("RoverRuckus");
         VuforiaTrackable blueRover = targetsRoverRuckus.get(0);
@@ -210,24 +224,30 @@ public class BlockDetectCrater extends LinearOpMode {
                 .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
                 .multiplied(Orientation.getRotationMatrix(EXTRINSIC, YZX, DEGREES,
                         CAMERA_CHOICE == FRONT ? 90 : -90, 0, 0));
+        for (VuforiaTrackable trackable : allTrackables)
+        {
+            ((VuforiaTrackableDefaultListener)trackable.getListener()).setPhoneInformation(phoneLocationOnRobot, parametersVu.cameraDirection);
+        }
 
         if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
             initTfod();
         }
-        /** Wait for the game to begin */
+        // Wait for the game to begin
         telemetry.addData("Status", "Initialized");
         telemetry.addData("Press Start to", "Start Detecting");
         telemetry.update();
+        CameraDevice.getInstance().setFlashTorchMode(true) ;
         waitForStart();
 
         if (opModeIsActive()) {
             telemetry.addData("Status", "Running");
-            /** Activate Tensor Flow Object Detection. */
+            // Activate Tensor Flow Object Detection.
             if (tfod != null) {
                 tfod.activate();
             }
-            runtime.reset();
+
             while (opModeIsActive()) {
+
                 if (tfod != null) {
                     // getUpdatedRecognitions() will return null if no new information is available since
                     // the last time that call was made.
@@ -238,124 +258,189 @@ public class BlockDetectCrater extends LinearOpMode {
                             int goldMineralX = -1;
                             int silverMineral1X = -1;
                             int silverMineral2X = -1;
-                            //(1.) Detects the minerals in the sampling position
-                            //We added recognition.getTop()>500 to the if statement to ignore the minerals in the crater
                             //12-8-18 Fixed detection of minerals in crater.
+                            //(1.) Detects the minerals in the sampling position
                             for (Recognition recognition : updatedRecognitions) {
-                                if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)&&recognition.getTop()>600) {
+                                if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)&&recognition.getTop()>500) {
                                     goldMineralX = (int) recognition.getLeft();
-                                } else if (silverMineral1X == -1&&recognition.getTop()>600) {
+                                } else if (silverMineral1X == -1&&recognition.getTop()>500) {
                                     silverMineral1X = (int) recognition.getLeft();
-                                } else if(recognition.getTop()>600) {
+                                } else if(recognition.getTop()>500) {
                                     silverMineral2X = (int) recognition.getLeft();
                                 }
                             }
-                            //We had to modify the code that decided which position the gold was in because our robot can only see two minerals at the sme time
-                            if (((goldMineralX != -1 && silverMineral1X != -1) ||(silverMineral2X != -1&&goldMineralX != -1)||(silverMineral2X != -1&&silverMineral1X != -1))||runtime.milliseconds() > 8000) {
-                                telemetry.addData("a",goldMineralX);
-                                telemetry.addData("a",silverMineral1X);
-                                telemetry.addData("a",silverMineral2X);
-                                //(3.) If the robot detects that the gold is in the right or left position:
-                                if (((goldMineralX < silverMineral1X || goldMineralX < silverMineral2X) && goldMineralX != -1)) {
+                            if (goldMineralX != -1 || silverMineral1X != -1 || silverMineral2X != -1) {
+                                // (3.) If the robot detects that the gold is in the right or left position
+                                if ((goldMineralX < silverMineral1X || goldMineralX < silverMineral2X) && goldMineralX != -1) {
                                     telemetry.addData("Gold Mineral Position", "Left");
                                     telemetry.update();
                                     tfod.deactivate();
                                     Lower();
-                                    //(3a.) Drives forward a small amount
                                     forward(2,0.5);
-                                    //(3b.) Turns 30° right or left depending on the gold position
+
+                                    //(3a.) Turns 30° to the left
                                     rotate(30,0.65);
-                                    //(3c.) Drives forward to move the gold mineral out of the way
-                                    forward(5.8,0.5);
-                                    forward(-5.8,0.5);
-                                    rotate(21,0.65);
-                                    forward(6.3,0.5);
+
+                                    // (3b.) Drives forward to move the gold mineral out of the way
+                                    forward(9.5,0.75);
+                                    forward(-1,0.75);
+                                    // (3d.) Turns 60° to the right
+                                    rotate(-60,0.7);
+
+                                    // (3e.) Lowers collector
+                                    CollectorLift.setPower(-1);
+                                    sleep(90);
+                                    CollectorLift.setPower(0);
+                                    sleep(500);
+                                    // (3f.) Drives forward into the depot
+                                    //forward(5,0.5);
+
+                                    // (3g.) Spits out the team marker
+                                    Collector.setPower(1);
+                                    sleep(350);
+                                    Collector.setPower(0);
+                                    CollectorLift.setPower(1);
+                                    sleep(350);
+                                    CollectorLift.setPower(0);
+                                    //(3h.) Drives backward
+                                    forward(-4,0.5);
+                                    rotate(75,0.75);
                                     targetsRoverRuckus.activate();
 
                                     rotate(getDegToTurn(allTrackables),0.65);
-
-                                    /*while (distanceSensor.getDistance(DistanceUnit.INCH) > 10.5&&opModeIsActive())
+                                    /*while (distanceSensor.getDistance(DistanceUnit.INCH) > 10&&opModeIsActive())
                                     {
-                                        RightMotor.setPower(0.5);
-                                        LeftMotor.setPower(0.5);
+                                        RightMotor.setPower(0.6);
+                                        LeftMotor.setPower(0.6);
                                     }*/
-                                    forward(3,0.5);
-                                    rotate(74.7,0.65);
-                                    forward(9.685 ,0.5);
-
-                                    FrunkDown();
-                                    Barf();
-                                    FrunkUp();
-                                    forward(-5,0.5);
-                                    rotate(13,.65);
-                                    forward(-6,0.5);
-                                    Straw.setPosition(0.5);
+                                    forward(4,0.5);
+                                    rotate(67.5,0.685);
+                                    forward(7,0.6);
+                                    CollectorLift.setPower(-1);
+                                    sleep(90);
+                                    CollectorLift.setPower(0);
                                     LowerLifterDown();
                                     break;
-                                    //(2.) If the gold is in the center position the robot:
-                                } else if ((goldMineralX > silverMineral1X || goldMineralX > silverMineral2X)||runtime.milliseconds() > 8000  ) {
+                                }
+                                //(2.) Checks if the gold is in the center position the robot
+                                else if (goldMineralX > silverMineral1X || goldMineralX > silverMineral2X){
                                     telemetry.addData("Gold Mineral Position", "Center");
                                     telemetry.update();
                                     tfod.deactivate();
                                     Lower();
-                                    //2b.) Drives forward and pushes the gold mineral out of the way and into crater
-                                    forward(7,0.5);
-                                    forward(-4.2,0.5);
-                                    rotate(52,0.65);
-                                    forward(6.2,0.5);
+                                    //Lowers the collection system
+                                    CollectorLift.setPower(-1);
+                                    sleep(90);
+                                    CollectorLift.setPower(0);
+
+                                    //Drives forward and pushes the gold mineral out of th way
+                                    forward(6,0.6);
+                                    //(2c.) Spits out our team marker into the depot
+                                    Collector.setPower(1);
+                                    sleep(600);
+                                    Collector.setPower(0);
+                                    CollectorLift.setPower(1);
+                                    sleep(350);
+                                    CollectorLift.setPower(0);
+                                    forward(-1.4,0.5);
+                                    rotate(86,0.7);
+                                    forward(4,0.6);
+                                    rotate(-42,0.7);
                                     targetsRoverRuckus.activate();
 
                                     rotate(getDegToTurn(allTrackables),0.65);
-
-                                    /*while (distanceSensor.getDistance(DistanceUnit.INCH) > 10.5&&opModeIsActive())
+                                    /*while (distanceSensor.getDistance(DistanceUnit.INCH) > 12&&opModeIsActive())
                                     {
-                                        RightMotor.setPower(0.5);
-                                        LeftMotor.setPower(0.5);
+                                        RightMotor.setPower(0.6);
+                                        LeftMotor.setPower(0.6);
                                     }*/
-                                    forward(3,0.5);
-                                    rotate(78,0.65);
-                                    forward(9.685,0.5);
-
-                                    FrunkDown();
-                                    Barf();
-                                    FrunkUp();
-                                    forward(-5,0.5);
-                                    rotate(13,.65);
-                                    forward(-6,0.5);
-                                    Straw.setPosition(0.5);
+                                    forward(4,0.5);
+                                    rotate(70,0.65);
+                                    forward(7,0.6);
+                                    CollectorLift.setPower(-1);
+                                    sleep(90);
+                                    CollectorLift.setPower(0);
                                     LowerLifterDown();
                                     break;
-                                } else {
+                                }
+                                // (3.) If the robot detects that the gold is in the right or left position:
+                                else {
                                     telemetry.addData("Gold Mineral Position", "Right");
                                     telemetry.update();
                                     tfod.deactivate();
                                     Lower();
-                                    forward(2,0.5);
+                                    //tfod.shutdown();
+                                    /*
+                                    targetsRoverRuckus.activate();
+                                    while(true) {
+                                        for(VuforiaTrackable trackable : allTrackables)
+                                        {
+                                            OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) trackable.getListener()).getPose();
+                                            if(pose != null)
+                                            {
+                                                VectorF translation = pose.getTranslation();
+                                                telemetry.addData(trackable.getName()+ "-translation",translation);
+
+                                                double degreesToTurn = Math.toDegrees(Math.atan2(translation.get(1),translation.get(2)));
+
+                                                telemetry.addData(trackable.getName() + "-degrees",degreesToTurn);
+                                                telemetry.update();
+                                            }
+                                        }
+                                    }*/
+                                    forward(2,0.65);
+
+                                    // (3a.) Turns 32° to the right
                                     rotate(-32,0.65);
-                                    forward(6,0.5);
-                                    forward(-6,0.5);
-                                    rotate(85,0.65);
-                                    forward(6,0.5);
+
+                                    // (3b.) Drives forward to move the gold mineral out of the way
+                                    forward(10,0.5);
+
+                                    // (3c.) Drives backward a small amount
+                                    forward(-1.5,0.5);
+
+                                    // (3d.) Turns 60° to the left
+                                    rotate(50,0.65);
+
+                                    // (3e.) Lowers collector
+                                    CollectorLift.setPower(-1);
+                                    sleep(90);
+                                    CollectorLift.setPower(0);
+                                    sleep(500);
+
+                                    // (3f.) Drives forward into the depot
+                                    //forward(5,0.5);
+
+                                    // (3g.) Spits out the team marker
+                                    Collector.setPower(1);
+                                    sleep(350);
+                                    Collector.setPower(0);
+                                    CollectorLift.setPower(1);
+                                    sleep(350);
+                                    CollectorLift.setPower(0);
+                                    // (3h.) Drives backward
+                                    forward(-3,0.5);
+
+                                    // (3i1.) Turns 90° clockwise
+                                    rotate(68,1);
+                                    forward(10,0.5);
+                                    rotate(-45,0.8);
                                     targetsRoverRuckus.activate();
 
                                     rotate(getDegToTurn(allTrackables),0.65);
 
-                                    /*while (distanceSensor.getDistance(DistanceUnit.INCH) > 10.5&&opModeIsActive())
+                                    // (3i2.) Dives backward to clear lane
+                                    /*while (distanceSensor.getDistance(DistanceUnit.INCH) > 12&&opModeIsActive())
                                     {
-                                        RightMotor.setPower(0.5);
-                                        LeftMotor.setPower(0.5);
+                                        RightMotor.setPower(0.6);
+                                        LeftMotor.setPower(0.6);
                                     }*/
-                                    forward(3,0.5);
-                                    rotate(79.85,0.65);
-                                    forward(9.685,0.5);
-
-                                    FrunkDown();
-                                    Barf();
-                                    FrunkUp();
-                                    forward(-5,0.5);
-                                    rotate(13,.65);
-                                    forward(-6,0.5);
-                                    Straw.setPosition(0.5);
+                                    forward(4,0.5);
+                                    rotate(65,0.7);
+                                    forward(7,0.6);
+                                    CollectorLift.setPower(-1);
+                                    sleep(90);
+                                    CollectorLift.setPower(0);
                                     LowerLifterDown();
                                     break;
 
@@ -383,12 +468,6 @@ public class BlockDetectCrater extends LinearOpMode {
         sleep(2900);
         lifter.setPower(0);
     }
-    public void LowerLifterDown()
-    {
-        lifter.setPower(1);
-        sleep(2900);
-        lifter.setPower(0);
-    }
     private void initVuforia() {
         /*
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
@@ -411,7 +490,6 @@ public class BlockDetectCrater extends LinearOpMode {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
                 "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minimumConfidence = 0.3;
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
     }
@@ -448,30 +526,12 @@ public class BlockDetectCrater extends LinearOpMode {
         return globalAngle;
     }
 
-    /**
+    /*
      * See if we are moving in a straight line and if not return a power correction value.
      * @return Power adjustment, + is adjust left - is adjust right.
      */
-    private double checkDirection()
-    {
-        // The gain value determines how sensitive the correction is to direction changes.
-        // You will have to experiment with your robot to get small smooth direction changes
-        // to stay on a straight line.
-        double correction, angle, gain = .10;
 
-        angle = getAngle();
-
-        if (angle == 0)
-            correction = 0;             // no adjustment.
-        else
-            correction = -angle;        // reverse sign of angle for correction.
-
-        correction = correction * gain;
-
-        return correction;
-    }
-
-    /**
+    /*
      * Rotate left or right the number of degrees. Does not support turning more than 180 degrees.
      * @param degrees Degrees to turn, + is left - is right
      */
@@ -505,12 +565,12 @@ public class BlockDetectCrater extends LinearOpMode {
         if (degrees < 0)
         {
             // On right turn we have to get off zero first.
-            while (opModeIsActive() && getAngle() == 0) {}
+            while (opModeIsActive() && getAngle() == 0) {sleep(1);}
 
-            while (opModeIsActive() && getAngle() > degrees) {}
+            while (opModeIsActive() && getAngle() > degrees) {sleep(1);}
         }
         else    // left turn.
-            while (opModeIsActive() && getAngle() < degrees){}
+            while (opModeIsActive() && getAngle() < degrees){sleep(1);}
 
         // turn the motors off.
         RightMotor.setPower(0);
@@ -545,38 +605,35 @@ public class BlockDetectCrater extends LinearOpMode {
         RightMotor.setPower(0);
         LeftMotor.setPower(0);
     }
-    public void FrunkDown() {
-        CollectorLift.setPower(-0.5);
-        sleep(420);
-        CollectorLift.setPower(0);
-    }
-    public void FrunkUp() {
 
-        CollectorLift.setPower(0.5);
-        sleep(930);
-        CollectorLift.setPower(0);
+    public static boolean getTarget(List<VuforiaTrackable> trackables,int target)
+    {
+        return ((VuforiaTrackableDefaultListener)trackables.get(target).getListener()).isVisible();
     }
     public double getDegToTurn(List<VuforiaTrackable>allTrackables)
     {
-        Orientation rotation = null;
-        while (rotation == null&&opModeIsActive()) {
+
+        double degreesToTurn = 0;
+        for(int x = 0;x<200;x++) {
             for (VuforiaTrackable trackable : allTrackables) {
                 OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) trackable.getListener()).getPose();
-                // express position (translation) of robot in inches.
                 if (pose != null) {
-                    // express the rotation of the robot in degrees.
-                    rotation = Orientation.getOrientation(pose, EXTRINSIC, XYZ, DEGREES);
+                    VectorF translation = pose.getTranslation();
+                    degreesToTurn = Math.toDegrees(Math.atan2(translation.get(0), -translation.get(2)));
                 }
-            }
-        }
-        return rotation.secondAngle;
-    }
 
-    public void Barf()
+            }
+            sleep(5);
+            telemetry.addData("test",degreesToTurn);
+            telemetry.update();
+        }
+
+        return degreesToTurn;
+    }
+    public void LowerLifterDown()
     {
-        //(2c.) Spits out our team marker into the depot
-        Collector.setPower(1);
-        sleep(800);
-        Collector.setPower(0);
+        lifter.setPower(1);
+        sleep(2900);
+        lifter.setPower(0);
     }
 }

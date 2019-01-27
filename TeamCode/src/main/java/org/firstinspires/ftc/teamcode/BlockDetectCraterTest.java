@@ -43,20 +43,20 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.vuforia.CameraDevice;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
@@ -86,9 +86,9 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@Autonomous(name = "Block Detector Crater", group = "Block Detector")
-//@Disabled
-public class BlockDetectCrater extends LinearOpMode {
+@Autonomous(name = "Block Detector Crater Test", group = "Block Detector")
+@Disabled
+public class BlockDetectCraterTest extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
     private static final String LABEL_SILVER_MINERAL = "Silver Mineral";
@@ -113,7 +113,7 @@ public class BlockDetectCrater extends LinearOpMode {
 
     // Select which camera you want use.  The FRONT camera is the one on the same side as the screen.
     // Valid choices are:  BACK or FRONT
-    private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
+    private static final CameraDirection CAMERA_CHOICE = BACK;
 
     private OpenGLMatrix lastLocation = null;
     private boolean targetVisible = false;
@@ -218,6 +218,7 @@ public class BlockDetectCrater extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.addData("Press Start to", "Start Detecting");
         telemetry.update();
+        CameraDevice.getInstance().setFlashTorchMode(true) ;
         waitForStart();
 
         if (opModeIsActive()) {
@@ -251,12 +252,12 @@ public class BlockDetectCrater extends LinearOpMode {
                                 }
                             }
                             //We had to modify the code that decided which position the gold was in because our robot can only see two minerals at the sme time
-                            if (((goldMineralX != -1 && silverMineral1X != -1) ||(silverMineral2X != -1&&goldMineralX != -1)||(silverMineral2X != -1&&silverMineral1X != -1))||runtime.milliseconds() > 8000) {
+                            if (((goldMineralX != -1 && silverMineral1X != -1) ||(silverMineral2X != -1&&goldMineralX != -1)||(silverMineral2X != -1&&silverMineral1X != -1))||runtime.milliseconds() > 10000) {
                                 telemetry.addData("a",goldMineralX);
                                 telemetry.addData("a",silverMineral1X);
                                 telemetry.addData("a",silverMineral2X);
                                 //(3.) If the robot detects that the gold is in the right or left position:
-                                if (((goldMineralX < silverMineral1X || goldMineralX < silverMineral2X) && goldMineralX != -1)) {
+                                if (((goldMineralX < silverMineral1X || goldMineralX < silverMineral2X) && goldMineralX != -1)||runtime.milliseconds() > 10000) {
                                     telemetry.addData("Gold Mineral Position", "Left");
                                     telemetry.update();
                                     tfod.deactivate();
@@ -279,21 +280,21 @@ public class BlockDetectCrater extends LinearOpMode {
                                         RightMotor.setPower(0.5);
                                         LeftMotor.setPower(0.5);
                                     }*/
-                                    forward(3,0.5);
-                                    rotate(74.7,0.65);
-                                    forward(9.685 ,0.5);
+                                    forward(4,0.5);
+                                    rotate(79.85,0.65);
+                                    forward(8,0.5);
 
                                     FrunkDown();
                                     Barf();
                                     FrunkUp();
                                     forward(-5,0.5);
-                                    rotate(13,.65);
-                                    forward(-6,0.5);
+                                    rotate(7,.65);
+                                    forward(-4,0.5);
                                     Straw.setPosition(0.5);
                                     LowerLifterDown();
                                     break;
                                     //(2.) If the gold is in the center position the robot:
-                                } else if ((goldMineralX > silverMineral1X || goldMineralX > silverMineral2X)||runtime.milliseconds() > 8000  ) {
+                                } else if (goldMineralX > silverMineral1X || goldMineralX > silverMineral2X) {
                                     telemetry.addData("Gold Mineral Position", "Center");
                                     telemetry.update();
                                     tfod.deactivate();
@@ -312,16 +313,16 @@ public class BlockDetectCrater extends LinearOpMode {
                                         RightMotor.setPower(0.5);
                                         LeftMotor.setPower(0.5);
                                     }*/
-                                    forward(3,0.5);
-                                    rotate(78,0.65);
-                                    forward(9.685,0.5);
+                                    forward(4,0.5);
+                                    rotate(79.85,0.65);
+                                    forward(8,0.5);
 
                                     FrunkDown();
                                     Barf();
                                     FrunkUp();
                                     forward(-5,0.5);
-                                    rotate(13,.65);
-                                    forward(-6,0.5);
+                                    rotate(7,.65);
+                                    forward(-4,0.5);
                                     Straw.setPosition(0.5);
                                     LowerLifterDown();
                                     break;
@@ -345,16 +346,16 @@ public class BlockDetectCrater extends LinearOpMode {
                                         RightMotor.setPower(0.5);
                                         LeftMotor.setPower(0.5);
                                     }*/
-                                    forward(3,0.5);
+                                    forward(4,0.5);
                                     rotate(79.85,0.65);
-                                    forward(9.685,0.5);
+                                    forward(8,0.5);
 
                                     FrunkDown();
                                     Barf();
                                     FrunkUp();
                                     forward(-5,0.5);
-                                    rotate(13,.65);
-                                    forward(-6,0.5);
+                                    rotate(7,.65);
+                                    forward(-4,0.5);
                                     Straw.setPosition(0.5);
                                     LowerLifterDown();
                                     break;
@@ -411,7 +412,6 @@ public class BlockDetectCrater extends LinearOpMode {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
                 "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minimumConfidence = 0.3;
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
     }
@@ -546,14 +546,15 @@ public class BlockDetectCrater extends LinearOpMode {
         LeftMotor.setPower(0);
     }
     public void FrunkDown() {
-        CollectorLift.setPower(-0.5);
-        sleep(420);
-        CollectorLift.setPower(0);
+        lifter.setPower(-0.5);
+        sleep(330);
+        lifter.setPower(0);
+        sleep(500);
     }
     public void FrunkUp() {
 
-        CollectorLift.setPower(0.5);
-        sleep(930);
+        CollectorLift.setPower(1);
+        sleep(350);
         CollectorLift.setPower(0);
     }
     public double getDegToTurn(List<VuforiaTrackable>allTrackables)
