@@ -8,11 +8,10 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import java.io.ByteArrayOutputStream;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.ImageFormat;
-import android.graphics.Rect;
+import android.graphics.BitmapFactory;``````````
+import android.graphics.Rect;       `
 import android.graphics.YuvImage;
-import android.hardware.Camera;
+import android.hardware.Camera;1
 import android.util.Log;
 
 

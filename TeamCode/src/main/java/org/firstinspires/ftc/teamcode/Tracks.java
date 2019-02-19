@@ -94,6 +94,7 @@ public class  Tracks extends LinearOpMode {
     //Define Misc. Variables
     private ElapsedTime runtime = new ElapsedTime();
     float basketPos = 180;
+    float tentacleSPos = -5;
 
     //Create Motor/Servo Variables
     DcMotor RightMotor;
@@ -103,6 +104,8 @@ public class  Tracks extends LinearOpMode {
     DcMotor Collector1;
     DcMotor Collector2;
     DcMotor lifter;
+    DcMotor TentacleM;
+    Servo TentacleS;
 
     @Override
     public void runOpMode() throws InterruptedException { //When The OpMode Is Initialized
@@ -119,9 +122,12 @@ public class  Tracks extends LinearOpMode {
         Collector1 = hardwareMap.dcMotor.get("collector1");
         Collector2 = hardwareMap.dcMotor.get("collector2");
         lifter = hardwareMap.dcMotor.get("lifter");
+        TentacleM = hardwareMap.dcMotor.get("Tentacle_M");
+        TentacleS = hardwareMap.servo.get("Tentacle_S");
         //The Right Motor Must Be Reversed To Function Correctly
         RightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        TentacleS.setPosition(tentacleSPos/180);
         //Wait For The OpMode To Begin
         waitForStart();
 
@@ -178,13 +184,23 @@ public class  Tracks extends LinearOpMode {
                 Thread.sleep(750);
                 basketPos=180;
             }
-            Collector1.setPower(-gamepad2.right_stick_y );
+            Collector1.setPower(-gamepad2.right_stick_y);
             Collector2.setPower(gamepad2.left_stick_y/2);
             Basket.setPosition(basketPos/180);
             lifter.setPower(gamepad1.left_trigger-gamepad1.right_trigger);
             Arm.setPower(gamepad2.right_trigger-gamepad2.left_trigger);
             LeftMotor.setPower(gamepad1.left_stick_y-gamepad1.right_stick_x);
             RightMotor.setPower(gamepad1.left_stick_y+gamepad1.right_stick_x);
+            if(gamepad2.left_bumper) {
+                TentacleM
+            }
+            if(gamepad2.a) {
+                tentacleSPos = 77;
+            }
+            else if(gamepad2.x) {
+                tentacleSPos = 170;
+            }
+            TentacleS.setPosition(tentacleSPos/180);
             telemetry.update();
         }
     }

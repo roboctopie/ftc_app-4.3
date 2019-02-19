@@ -318,8 +318,7 @@ public class BlockDetectCrater extends LinearOpMode {
                                     forward(-5,0.5);
                                     Straw.setPosition(0.5);
                                     break;
-                                } else {
-                                    telemetry.addData("Gold Mineral Position", "Right");
+                                } else { telemetry.addData("Gold Mineral Position", "Right");
                                     telemetry.update();
                                     tfod.deactivate();
                                     forward(2,0.5);
