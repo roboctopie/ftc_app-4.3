@@ -192,7 +192,15 @@ public class  Tracks extends LinearOpMode {
             LeftMotor.setPower(gamepad1.left_stick_y-gamepad1.right_stick_x);
             RightMotor.setPower(gamepad1.left_stick_y+gamepad1.right_stick_x);
             if(gamepad2.left_bumper) {
-                TentacleM
+                TentacleM.setPower(0.5);
+            }
+            else if(gamepad2.right_bumper)
+            {
+                TentacleM.setPower(-0.5);
+            }
+            else
+            {
+                TentacleM.setPower(0);
             }
             if(gamepad2.a) {
                 tentacleSPos = 77;
