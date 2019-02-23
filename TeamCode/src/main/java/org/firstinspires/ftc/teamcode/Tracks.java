@@ -105,7 +105,7 @@ public class  Tracks extends LinearOpMode {
     DcMotor Collector2;
     DcMotor lifter;
     DcMotor TentacleM;
-    Servo TentacleS;
+    //Servo TentacleS;
 
     @Override
     public void runOpMode() throws InterruptedException { //When The OpMode Is Initialized
@@ -123,11 +123,11 @@ public class  Tracks extends LinearOpMode {
         Collector2 = hardwareMap.dcMotor.get("collector2");
         lifter = hardwareMap.dcMotor.get("lifter");
         TentacleM = hardwareMap.dcMotor.get("Tentacle_M");
-        TentacleS = hardwareMap.servo.get("Tentacle_S");
+        //TentacleS = hardwareMap.servo.get("Tentacle_S");
         //The Right Motor Must Be Reversed To Function Correctly
         RightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        TentacleS.setPosition(tentacleSPos/180);
+        //TentacleS.setPosition(tentacleSPos/180);
         //Wait For The OpMode To Begin
         waitForStart();
 
@@ -189,8 +189,25 @@ public class  Tracks extends LinearOpMode {
             Basket.setPosition(basketPos/180);
             lifter.setPower(gamepad1.left_trigger-gamepad1.right_trigger);
             Arm.setPower(gamepad2.right_trigger-gamepad2.left_trigger);
-            LeftMotor.setPower(gamepad1.left_stick_y-gamepad1.right_stick_x);
-            RightMotor.setPower(gamepad1.left_stick_y+gamepad1.right_stick_x);
+            /*if(abs(gamepad1.right_stick_x) < 0.1) {
+                //If the drivers are not turning the robot moves faster because it can
+                LeftMotor.setPower(gamepad1.left_stick_y);
+                RightMotor.setPower(gamepad1.left_stick_y);
+            } else if (abs(gamepad1.left_stick_y) > 0.1) {
+                //If the drivers are going forward and turning
+                */
+                //This does arc-turning
+            //Add sign param
+            if(Zero(abs(gamepad1.left_stick_y) - gamepad1.right_stick_x)==0) {
+                LeftMotor.setPower(gamepad1.right_stick_x);
+                RightMotor.setPower(-gamepad1.right_stick_x);
+            } else {
+                LeftMotor.setPower((gamepad1.left_stick_y - gamepad1.right_stick_x) - gamepad1.right_stick_x);
+                RightMotor.setPower((gamepad1.left_stick_y - gamepad1.right_stick_x) + gamepad1.right_stick_x);
+            }
+                /*} else {
+
+            }*/
             if(gamepad2.left_bumper) {
                 TentacleM.setPower(0.5);
             }
@@ -208,8 +225,13 @@ public class  Tracks extends LinearOpMode {
             else if(gamepad2.x) {
                 tentacleSPos = 170;
             }
-            TentacleS.setPosition(tentacleSPos/180);
+            //TentacleS.setPosition(tentacleSPos/180);
             telemetry.update();
         }
+    }
+    public static double Zero(double input)
+    {
+        if(input<0) return 0;
+        else return input;
     }
 }
