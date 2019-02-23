@@ -105,6 +105,7 @@ public class  Tracks extends LinearOpMode {
     DcMotor Collector2;
     DcMotor lifter;
     DcMotor TentacleM;
+    double turnMultipliyer;
     //Servo TentacleS;
 
     @Override
@@ -198,16 +199,24 @@ public class  Tracks extends LinearOpMode {
                 */
                 //This does arc-turning
             //Add sign param
-            if(Zero(abs(gamepad1.left_stick_y) - gamepad1.right_stick_x)==0) {
+           /* if(Zero(abs(gamepad1.left_stick_y) - gamepad1.right_stick_x)==0) {
                 LeftMotor.setPower(gamepad1.right_stick_x);
                 RightMotor.setPower(-gamepad1.right_stick_x);
             } else {
                 LeftMotor.setPower((gamepad1.left_stick_y - gamepad1.right_stick_x) - gamepad1.right_stick_x);
                 RightMotor.setPower((gamepad1.left_stick_y - gamepad1.right_stick_x) + gamepad1.right_stick_x);
             }
-                /*} else {
+
+
+                } else {
 
             }*/
+            turnMultipliyer = (Limit(abs(gamepad1.right_stick_x)+abs(gamepad1.left_stick_y))/(abs(gamepad1.right_stick_x)+abs(gamepad1.left_stick_y)));
+            telemetry.addData("turnMultiplier / Crazy Bob", turnMultipliyer);
+            LeftMotor.setPower((gamepad1.left_stick_y*turnMultipliyer)-(gamepad1.right_stick_x*turnMultipliyer));
+            telemetry.addData("LeftMotor Speed", (gamepad1.left_stick_y*turnMultipliyer)-(gamepad1.right_stick_x*turnMultipliyer));
+            RightMotor.setPower((gamepad1.left_stick_y*turnMultipliyer)+(gamepad1.right_stick_x*turnMultipliyer));
+            telemetry.addData("RightMotor Speed", (gamepad1.left_stick_y*turnMultipliyer)+(gamepad1.right_stick_x*turnMultipliyer));
             if(gamepad2.left_bumper) {
                 TentacleM.setPower(0.5);
             }
@@ -229,9 +238,9 @@ public class  Tracks extends LinearOpMode {
             telemetry.update();
         }
     }
-    public static double Zero(double input)
+    public static double Limit(double input)
     {
-        if(input<0) return 0;
+        if(input>1) return 1;
         else return input;
     }
 }
