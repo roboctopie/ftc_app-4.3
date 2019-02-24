@@ -26,6 +26,9 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+package org.firstinspires.ftc.teamcode;
+
 /*
  * Copyright (c) 2018 Team Roboctopi (#14496)
  * ------------------------------------------
@@ -75,8 +78,6 @@
  * ------------------------------------------
  */
 
-package org.firstinspires.ftc.teamcode;
-
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -93,6 +94,7 @@ public class  Tracks extends LinearOpMode {
     //Define Misc. Variables
     private ElapsedTime runtime = new ElapsedTime();
     float basketPos = 180;
+    float tentacleSPos = -5;
 
     //Create Motor/Servo Variables
     DcMotor RightMotor;
@@ -102,7 +104,9 @@ public class  Tracks extends LinearOpMode {
     DcMotor Collector1;
     DcMotor Collector2;
     DcMotor lifter;
-    Servo LegoWheel;
+    DcMotor TentacleM;
+    double turnMultipliyer;
+    //Servo TentacleS;
 
     @Override
     public void runOpMode() throws InterruptedException { //When The OpMode Is Initialized
@@ -119,17 +123,12 @@ public class  Tracks extends LinearOpMode {
         Collector1 = hardwareMap.dcMotor.get("collector1");
         Collector2 = hardwareMap.dcMotor.get("collector2");
         lifter = hardwareMap.dcMotor.get("lifter");
-        LegoWheel = hardwareMap.servo.get("Lego");
-
+        TentacleM = hardwareMap.dcMotor.get("Tentacle_M");
+        //TentacleS = hardwareMap.servo.get("Tentacle_S");
         //The Right Motor Must Be Reversed To Function Correctly
         RightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        LegoWheel.setPosition(1);
-        /*
-        lifter.setPower(1);
-        sleep(2700);
-        lifter.setPower(0);
-*/
+        //TentacleS.setPosition(tentacleSPos/180);
         //Wait For The OpMode To Begin
         waitForStart();
 
@@ -186,22 +185,62 @@ public class  Tracks extends LinearOpMode {
                 Thread.sleep(750);
                 basketPos=180;
             }
-            if(gamepad2.right_bumper&&gamepad1.right_trigger==0&&gamepad1.right_trigger==0)
+            Collector1.setPower(-gamepad2.right_stick_y);
+            Collector2.setPower(gamepad2.left_stick_y/2);
+            Basket.setPosition(basketPos/180);
+            lifter.setPower(gamepad1.left_trigger-gamepad1.right_trigger);
+            Arm.setPower(gamepad2.right_trigger-gamepad2.left_trigger);
+            /*if(abs(gamepad1.right_stick_x) < 0.1) {
+                //If the drivers are not turning the robot moves faster because it can
+                LeftMotor.setPower(gamepad1.left_stick_y);
+                RightMotor.setPower(gamepad1.left_stick_y);
+            } else if (abs(gamepad1.left_stick_y) > 0.1) {
+                //If the drivers are going forward and turning
+                */
+                //This does arc-turning
+            //Add sign param
+           /* if(Zero(abs(gamepad1.left_stick_y) - gamepad1.right_stick_x)==0) {
+                LeftMotor.setPower(gamepad1.right_stick_x);
+                RightMotor.setPower(-gamepad1.right_stick_x);
+            } else {
+                LeftMotor.setPower((gamepad1.left_stick_y - gamepad1.right_stick_x) - gamepad1.right_stick_x);
+                RightMotor.setPower((gamepad1.left_stick_y - gamepad1.right_stick_x) + gamepad1.right_stick_x);
+            }
+
+
+                } else {
+
+            }*/
+            turnMultipliyer = (Limit(abs(gamepad1.right_stick_x)+abs(gamepad1.left_stick_y))/(abs(gamepad1.right_stick_x)+abs(gamepad1.left_stick_y)));
+            telemetry.addData("turnMultiplier / Crazy Bob", turnMultipliyer);
+            LeftMotor.setPower((gamepad1.left_stick_y*turnMultipliyer)-(gamepad1.right_stick_x*turnMultipliyer));
+            telemetry.addData("LeftMotor Speed", (gamepad1.left_stick_y*turnMultipliyer)-(gamepad1.right_stick_x*turnMultipliyer));
+            RightMotor.setPower((gamepad1.left_stick_y*turnMultipliyer)+(gamepad1.right_stick_x*turnMultipliyer));
+            telemetry.addData("RightMotor Speed", (gamepad1.left_stick_y*turnMultipliyer)+(gamepad1.right_stick_x*turnMultipliyer));
+            if(gamepad2.left_bumper) {
+                TentacleM.setPower(0.5);
+            }
+            else if(gamepad2.right_bumper)
             {
-                lifter.setPower(-1);
+                TentacleM.setPower(-0.5);
             }
             else
             {
-                lifter.setPower(gamepad1.left_trigger-gamepad1.right_trigger);
+                TentacleM.setPower(0);
             }
-            Collector1.setPower(-gamepad2.right_stick_y*0.75);
-            Collector2.setPower(gamepad2.left_stick_y*0.5);
-            Basket.setPosition(basketPos/180);
-            //lifter.setPower(gamepad1.left_trigger-gamepad1.right_trigger);
-            Arm.setPower(( gamepad2.right_trigger-gamepad2.left_trigger)/2);
-            LeftMotor.setPower(gamepad1.left_stick_y-gamepad1.right_stick_x);
-            RightMotor.setPower(gamepad1.left_stick_y+gamepad1.right_stick_x);
+            if(gamepad2.a) {
+                tentacleSPos = 77;
+            }
+            else if(gamepad2.x) {
+                tentacleSPos = 170;
+            }
+            //TentacleS.setPosition(tentacleSPos/180);
             telemetry.update();
         }
+    }
+    public static double Limit(double input)
+    {
+        if(input>1) return 1;
+        else return input;
     }
 }
