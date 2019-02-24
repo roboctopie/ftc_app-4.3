@@ -331,7 +331,7 @@ public class BlockDetectCrater extends LinearOpMode {
                                     tfod.deactivate();
                                     Lower();
                                     forward(2,0.5);
-                                    rotate(-32,0.65);
+                                    rotate(-35,0.65);
                                     forward(6,0.5);
                                     forward(-6,0.5);
                                     rotate(85,0.65);
