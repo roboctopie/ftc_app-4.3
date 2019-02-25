@@ -82,7 +82,7 @@ public class Lifter_down extends LinearOpMode {
     public void Lower()
     {
         lifter.setPower(1);
-        sleep(2900);
+        sleep(3000);
         lifter.setPower(0);
     }
 }

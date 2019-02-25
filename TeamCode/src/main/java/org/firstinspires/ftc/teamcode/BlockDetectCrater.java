@@ -105,7 +105,7 @@ public class BlockDetectCrater extends LinearOpMode {
     BNO055IMU imu;
     Orientation angles;
     private DcMotor lifter;
-    private DistanceSensor distanceSensor;
+   // private DistanceSensor distanceSensor;
     float basketPos = 185;
     private static final float mmPerInch        = 25.4f;
     private static final float mmFTCFieldWidth  = (12*6) * mmPerInch;       // the width of the FTC field (from the center point to the outer panels)
@@ -154,7 +154,7 @@ public class BlockDetectCrater extends LinearOpMode {
         Basket = hardwareMap.servo.get("basket");
         CollectorLift = hardwareMap.dcMotor.get("collector1");
         Collector = hardwareMap.dcMotor.get("collector2");
-        distanceSensor = hardwareMap.get(DistanceSensor.class, "distance");
+        //distanceSensor = hardwareMap.get(DistanceSensor.class, "distance");
         Straw = hardwareMap.servo.get("Lego");
         lifter = hardwareMap.dcMotor.get("lifter");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -261,6 +261,7 @@ public class BlockDetectCrater extends LinearOpMode {
                                     telemetry.update();
                                     tfod.deactivate();
                                     Lower();
+                                    sleep(400);
                                     //(3a.) Drives forward a small amount
                                     forward(2,0.5);
                                     //(3b.) Turns 30° right or left depending on the gold position
@@ -268,7 +269,7 @@ public class BlockDetectCrater extends LinearOpMode {
                                     //(3c.) Drives forward to move the gold mineral out of the way
                                     forward(5.8,0.5);
                                     forward(-5.8,0.5);
-                                    rotate(21,0.65);
+                                    rotate(20,0.65);
                                     forward(6.3,0.5);
                                     targetsRoverRuckus.activate();
 
@@ -287,7 +288,7 @@ public class BlockDetectCrater extends LinearOpMode {
                                     Barf();
                                     FrunkUp();
                                     forward(-5,0.5);
-                                    rotate(13,.65);
+                                    rotate(20,.65);
                                     forward(-6,0.5);
                                     Straw.setPosition(0.5);
                                     LowerLifterDown();
@@ -298,10 +299,11 @@ public class BlockDetectCrater extends LinearOpMode {
                                     telemetry.update();
                                     tfod.deactivate();
                                     Lower();
+                                    sleep(400);
                                     //2b.) Drives forward and pushes the gold mineral out of the way and into crater
                                     forward(7,0.5);
                                     forward(-4.2,0.5);
-                                    rotate(52,0.65);
+                                    rotate(60,0.65);
                                     forward(6.2,0.5);
                                     targetsRoverRuckus.activate();
 
@@ -320,7 +322,7 @@ public class BlockDetectCrater extends LinearOpMode {
                                     Barf();
                                     FrunkUp();
                                     forward(-5,0.5);
-                                    rotate(13,.65);
+                                    rotate(30,.65);
                                     forward(-6,0.5);
                                     Straw.setPosition(0.5);
                                     LowerLifterDown();
@@ -329,11 +331,12 @@ public class BlockDetectCrater extends LinearOpMode {
                                     telemetry.update();
                                     tfod.deactivate();
                                     Lower();
+                                    sleep(400);
                                     forward(2,0.5);
                                     rotate(-35,0.65);
                                     forward(6,0.5);
                                     forward(-6,0.5);
-                                    rotate(85,0.65);
+                                    rotate(100,0.65);
                                     forward(6,0.5);
                                     targetsRoverRuckus.activate();
 
@@ -344,15 +347,15 @@ public class BlockDetectCrater extends LinearOpMode {
                                         RightMotor.setPower(0.5);
                                         LeftMotor.setPower(0.5);
                                     }*/
-                                    forward(3,0.5);
-                                    rotate(79.85,0.65);
+                                    forward(4,0.5);
+                                    rotate(75,0.65);
                                     forward(9.685,0.5);
 
                                     FrunkDown();
                                     Barf();
                                     FrunkUp();
                                     forward(-5,0.5);
-                                    rotate(13,.65);
+                                    rotate(20,.65);
                                     forward(-6,0.5);
                                     Straw.setPosition(0.5);
                                     LowerLifterDown();
@@ -379,8 +382,9 @@ public class BlockDetectCrater extends LinearOpMode {
     public void Lower()
     {
         lifter.setPower(-1);
-        sleep(2900);
+        sleep(3000);
         lifter.setPower(0);
+
     }
     public void LowerLifterDown()
     {
@@ -552,7 +556,7 @@ public class BlockDetectCrater extends LinearOpMode {
     public void FrunkUp() {
 
         CollectorLift.setPower(0.5);
-        sleep(930);
+        sleep(1234);
         CollectorLift.setPower(0);
     }
     public double getDegToTurn(List<VuforiaTrackable>allTrackables)

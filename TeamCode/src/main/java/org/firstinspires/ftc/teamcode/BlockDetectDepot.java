@@ -116,7 +116,7 @@ public class BlockDetectDepot extends LinearOpMode {
     private DcMotor CollectorLift;
     private DcMotor Collector;
     private BNO055IMU imu;
-    private DistanceSensor distanceSensor;
+    ///private DistanceSensor distanceSensor;
     private DcMotor lifter;
     private static final float mmPerInch        = 25.4f;
     private static final float mmFTCFieldWidth  = (12*6) * mmPerInch;       // the width of the FTC field (from the center point to the outer panels)
@@ -177,7 +177,7 @@ public class BlockDetectDepot extends LinearOpMode {
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
-        distanceSensor = hardwareMap.get(DistanceSensor.class, "distance");
+       // distanceSensor = hardwareMap.get(DistanceSensor.class, "distance");
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
         // first.
         // Most robots need the motor on one side to be reversed to drive forward
@@ -349,8 +349,8 @@ public class BlockDetectDepot extends LinearOpMode {
                                         RightMotor.setPower(0.6);
                                         LeftMotor.setPower(0.6);
                                     }*/
-                                    forward(4,0.5);
-                                    rotate(65 ,0.65);
+                                    forward(5,0.5);
+                                    rotate(64 ,0.65);
                                     forward(7,0.6);
                                     FrunkDown();
                                     LowerLifterDown();
@@ -425,8 +425,8 @@ public class BlockDetectDepot extends LinearOpMode {
                                         RightMotor.setPower(0.6);
                                         LeftMotor.setPower(0.6);
                                     }*/
-                                    forward(4,0.5);
-                                    rotate(65,0.7);
+                                    forward(5,0.5);
+                                    rotate(64,0.7);
                                     forward(7,0.6);
                                     FrunkDown();
                                     LowerLifterDown();
@@ -458,14 +458,15 @@ public class BlockDetectDepot extends LinearOpMode {
     void FrunkUp()
     {
         CollectorLift.setPower(0.5);
-        sleep(930);
+        sleep(1234);
         CollectorLift.setPower(0);
     }
     public void Lower()
     {
         lifter.setPower(-1);
-        sleep(2900);
+        sleep(3100);
         lifter.setPower(0);
+        sleep(400);
     }
     
     private void initVuforia() {
