@@ -303,7 +303,7 @@ public class BlockDetectCrater extends LinearOpMode {
                                     //2b.) Drives forward and pushes the gold mineral out of the way and into crater
                                     forward(7,0.5);
                                     forward(-4.2,0.5);
-                                    rotate(60,0.65);
+                                    rotate(57,0.65);
                                     forward(6.2,0.5);
                                     targetsRoverRuckus.activate();
 
@@ -314,7 +314,7 @@ public class BlockDetectCrater extends LinearOpMode {
                                         RightMotor.setPower(0.5);
                                         LeftMotor.setPower(0.5);
                                     }*/
-                                    forward(3,0.5);
+                                    forward( 2,0.5);
                                     rotate(78,0.65);
                                     forward(9.685,0.5);
 
@@ -322,7 +322,7 @@ public class BlockDetectCrater extends LinearOpMode {
                                     Barf();
                                     FrunkUp();
                                     forward(-5,0.5);
-                                    rotate(30,.65);
+                                    rotate(23,.65);
                                     forward(-6,0.5);
                                     Straw.setPosition(0.5);
                                     LowerLifterDown();
@@ -336,7 +336,7 @@ public class BlockDetectCrater extends LinearOpMode {
                                     rotate(-35,0.65);
                                     forward(6,0.5);
                                     forward(-6,0.5);
-                                    rotate(100,0.65);
+                                    rotate(91,0.65);
                                     forward(6,0.5);
                                     targetsRoverRuckus.activate();
 
@@ -347,7 +347,7 @@ public class BlockDetectCrater extends LinearOpMode {
                                         RightMotor.setPower(0.5);
                                         LeftMotor.setPower(0.5);
                                     }*/
-                                    forward(4,0.5);
+                                    forward(2.5,0.5);
                                     rotate(75,0.65);
                                     forward(9.685,0.5);
 
@@ -355,7 +355,7 @@ public class BlockDetectCrater extends LinearOpMode {
                                     Barf();
                                     FrunkUp();
                                     forward(-5,0.5);
-                                    rotate(20,.65);
+                                    rotate(17,.65);
                                     forward(-6,0.5);
                                     Straw.setPosition(0.5);
                                     LowerLifterDown();

@@ -105,6 +105,7 @@ public class  Tracks extends LinearOpMode {
     DcMotor Collector2;
     DcMotor lifter;
     DcMotor TentacleM;
+    Servo LegoWheel;
     double turnMultipliyer;
     //Servo TentacleS;
 
@@ -127,9 +128,11 @@ public class  Tracks extends LinearOpMode {
         //TentacleS = hardwareMap.servo.get("Tentacle_S");
         //The Right Motor Must Be Reversed To Function Correctly
         RightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-
+        TentacleM.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        LegoWheel = hardwareMap.servo.get("Lego");
         //TentacleS.setPosition(tentacleSPos/180);
         //Wait For The OpMode To Begin
+        LegoWheel.setPosition(1);
         waitForStart();
 
         //Start The Runtime Timer
@@ -176,20 +179,14 @@ public class  Tracks extends LinearOpMode {
             }
             if(gamepad2.b)
             {
-                basketPos=150;
+                basketPos=124;
             }
-            if(gamepad1.b)
-            {
-                basketPos=50;
-                Basket.setPosition(basketPos/180);
-                Thread.sleep(750);
-                basketPos=180;
-            }
+
             Collector1.setPower(-gamepad2.right_stick_y);
             Collector2.setPower(gamepad2.left_stick_y/2);
             Basket.setPosition(basketPos/180);
-            lifter.setPower(gamepad1.left_trigger-gamepad1.right_trigger);
-            Arm.setPower(gamepad2.right_trigger-gamepad2.left_trigger);
+            TentacleM.setPower((gamepad1.left_trigger*0.4)-(gamepad1.right_trigger*0.75));
+            Arm.setPower((gamepad2.right_trigger*0.75)-(gamepad2.left_trigger*0.75));
             /*if(abs(gamepad1.right_stick_x) < 0.1) {
                 //If the drivers are not turning the robot moves faster because it can
                 LeftMotor.setPower(gamepad1.left_stick_y);
@@ -217,16 +214,16 @@ public class  Tracks extends LinearOpMode {
             telemetry.addData("LeftMotor Speed", (gamepad1.left_stick_y*turnMultipliyer)-(gamepad1.right_stick_x*turnMultipliyer));
             RightMotor.setPower((gamepad1.left_stick_y*turnMultipliyer)+(gamepad1.right_stick_x*turnMultipliyer));
             telemetry.addData("RightMotor Speed", (gamepad1.left_stick_y*turnMultipliyer)+(gamepad1.right_stick_x*turnMultipliyer));
-            if(gamepad2.left_bumper) {
-                TentacleM.setPower(0.5);
+            if(gamepad1.left_bumper) {
+                lifter.setPower(1);
             }
-            else if(gamepad2.right_bumper)
+            else if(gamepad1.right_bumper)
             {
-                TentacleM.setPower(-0.5);
+                lifter.setPower(-1);
             }
             else
             {
-                TentacleM.setPower(0);
+                lifter.setPower(0);
             }
             if(gamepad2.a) {
                 tentacleSPos = 77;

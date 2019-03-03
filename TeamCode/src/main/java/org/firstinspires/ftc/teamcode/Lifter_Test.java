@@ -35,33 +35,75 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import static java.lang.Math.abs;
+
 @TeleOp(name="Lifter Test", group="Test")
 //@Disabled
 public class Lifter_Test extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
     DcMotor lifter;
-
+    DcMotor CollectorLift;
+    DcMotor Collector;
+    int start = 0;
+    double prevStep;
+    double stepsPerCycle = 0.6;
+    double powerAdjust = 0;
+    int cycleLength = 50;
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        lifter = hardwareMap.dcMotor.get("collector1");
-
+        lifter = hardwareMap.dcMotor.get("Tentacle_M");
+        lifter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        CollectorLift = hardwareMap.dcMotor.get("collector1");
+        Collector = hardwareMap.dcMotor.get("collector2");
         waitForStart();
         runtime.reset();
 
         //while (opModeIsActive()) {
         //lifter.setPower(gamepad1.left_stick_y);
-        lifter.setPower(-0.5);
-        sleep(330);
+        start = lifter.getCurrentPosition();
+        prevStep = start;
+
+        while(lifter.getCurrentPosition()<start+76&&opModeIsActive())
+        {
+            powerAdjust = -sigmoid(stepsPerCycle-(lifter.getCurrentPosition()-prevStep))*0.36;
+            lifter.setPower(lifter.getPower()+powerAdjust+0.15);
+            sleep(cycleLength);
+            telemetry.addData("",powerAdjust);
+            telemetry.update();
+        }
         lifter.setPower(0);
-        sleep(1000);
-        lifter.setPower(0.5);
-        sleep(861);
+        sleep(250);
+        CollectorLift.setPower(-0.5);
+        sleep(420);
+        CollectorLift.setPower(0);
+        sleep(100);
+        Collector.setPower(1);
+        sleep(800);
+        Collector.setPower(0);
+        sleep(100);
+        CollectorLift.setPower(0.5);
+        sleep(1234);
+        CollectorLift.setPower(0);
+        sleep(250);
+        /*
+        while(lifter.getCurrentPosition()>start+80&&opModeIsActive())
+        {
+            powerAdjust = -sigmoid(-stepsPerCycle-(lifter.getCurrentPosition()-prevStep))*0.36;
+            lifter.setPower(lifter.getPower()+powerAdjust-0.15);
+            sleep(cycleLength);
+            telemetry.addData("",powerAdjust);
+            telemetry.update();
+        }
         lifter.setPower(0);
-        telemetry.update();
-        //}
+        */
+        sleep(10000);
+    }
+    public static double sigmoid(double input)
+    {
+        return (1/(1+Math.pow(1.5,-(input))))*-0.5;
     }
 }
